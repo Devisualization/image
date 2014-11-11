@@ -8,7 +8,10 @@ Abstracted into a common image interface.
 
 TODO
 -----
-Other than PNG format e.g. TIFF, BMP.
+__Common:__
+- More formats other then PNG format e.g. TIFF, BMP.
+- Memory Image "format"
+- Common manipulation interface in Image
 
 __PNG:__
 Importing:
