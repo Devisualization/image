@@ -59,9 +59,28 @@ class PngImage : Image {
                 } body {
                     return allMyPixels[idx];
                 }
+
+                void opIndexAssign(Color_RGBA newValue, size_t idx)
+                in {
+                    assert(idx < allMyPixels.length);
+                } body {
+                    allMyPixels[idx] = newValue;
+                }
                 
                 @property size_t length() {
                     return allMyPixels.length;
+                }
+
+                size_t xFromIndex(size_t idx) {
+                    return idx / IHDR.width;
+                }
+
+                size_t yFromIndex(size_t idx) {
+                    return idx % IHDR.height;
+                }
+                
+                size_t indexFromXY(size_t x, size_t y) {
+                    return (y * IHDR.width) + x;
                 }
 
                 // InputRange

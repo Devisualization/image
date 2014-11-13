@@ -67,13 +67,32 @@ class MutableImage : Image {
                 in {
                     assert(idx < allMyPixels.length);
                 } body {
-                    return allMyPixels[idx / width][idx % height];
+                    return allMyPixels[xFromIndex(idx)][yFromIndex(idx)];
+                }
+
+                void opIndexAssign(Color_RGBA newValue, size_t idx)
+                in {
+                    assert(idx < allMyPixels.length);
+                } body {
+                    allMyPixels[xFromIndex(idx)][yFromIndex(idx)] = newValue;
                 }
                 
                 @property size_t length() {
                     return totalSize;
                 }
+
+                size_t xFromIndex(size_t idx) {
+                    return idx / width;
+                }
                 
+                size_t yFromIndex(size_t idx) {
+                    return idx % height;
+                }
+                
+                size_t indexFromXY(size_t x, size_t y) {
+                    return (y * width) + x;
+                }
+
                 // InputRange
 
                 @property Color_RGBA front() {

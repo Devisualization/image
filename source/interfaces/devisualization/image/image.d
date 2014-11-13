@@ -37,7 +37,13 @@ interface Image {
 interface ImagePixels(COLOR) : InputRange!COLOR {
     @property COLOR[] allPixels();
     COLOR opIndex(size_t idx);
+    void opIndexAssign(COLOR, size_t idx);
     @property size_t length();
+
+    size_t xFromIndex(size_t idx);
+    size_t yFromIndex(size_t idx);
+
+    size_t indexFromXY(size_t x, size_t y);
 }
 
 struct Color_RGBA {
