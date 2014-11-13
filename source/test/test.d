@@ -40,7 +40,7 @@ void main() {
         writefln("%d: %s", i, pixel);
     }
 
-    img = makeMutable(img);
+    img = new MutableImage(img);
 
     img.rgba[3] = Color_RGBA(2, 2, 2, 2);
 
