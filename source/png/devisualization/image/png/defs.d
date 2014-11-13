@@ -105,6 +105,14 @@ class PngImage : Image {
             
             return new RGBAClasz;
         }
+
+        size_t width() {
+            return IHDR.width;
+        }
+
+        size_t height() {
+            return IHDR.height;
+        }
     }
 }
 

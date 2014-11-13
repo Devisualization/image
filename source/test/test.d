@@ -25,10 +25,18 @@ module test;
 
 void main() {
     import devisualization.image;
+    import devisualization.image.mutable;
+
     import std.stdio;
 
     Image img = imageFromFile("test/myfile.png");
     writeln("===============\nREAD\n===============");
 
+    img = makeMutable(img);
     writeln(img.rgba.allPixels);
+    writeln("width: ", img.width);
+    writeln("height: ", img.height);
+    foreach(i, pixel; img.rgba) {
+        writefln("%d: %s", i, pixel);
+    }
 }

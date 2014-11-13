@@ -23,19 +23,30 @@
 				"de_image:interfaces": "*"
 			}
 		},
+        {
+            "name": "mutable",
+            "targetType": "library",
+            "sourcePaths": ["source/mutable"],
+            "importPaths": ["source/mutable"],
+            "dependencies": {
+                "de_image:interfaces": "*"
+            }
+        },
 		{
 			"name": "common",
 			"targetType": "library",
 			"sourcePaths": [],
 			"dependencies": {
-				"de_image:png": "*"
+                "de_image:png": "*",
+				"de_image:mutable": "*"
 			}
 		},
 		{
 			"name": "test",
 			"targetType": "executable",
 			"dependencies": {
-				"de_image:png": "*"
+                "de_image:png": "*",
+				"de_image:mutable": "*"
 			}
 		}
 	]

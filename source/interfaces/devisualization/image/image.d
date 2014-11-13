@@ -27,6 +27,9 @@ import std.range : InputRange;
 interface Image {
     @property {
         ImagePixels!Color_RGBA rgba();
+
+        size_t width();
+        size_t height();
     }
 }
 
