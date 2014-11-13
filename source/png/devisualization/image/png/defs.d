@@ -36,10 +36,75 @@ class PngImage : Image {
     cHRM_Chunk cHRM;
     string[PngTextKeywords] tEXt;
     gAMA_Chunk gAMA;
+
+    Color_RGBA[] allMyPixels;
     
     this(ubyte[] data) {
         import devisualization.image.png.reader;
         parsePng(this, data);
+    }
+
+    @property {
+        ImagePixels!Color_RGBA rgba() {
+            class RGBAClasz : ImagePixels!Color_RGBA {
+                private size_t index;
+                
+                @property Color_RGBA[] allPixels() {
+                    return allMyPixels;
+                }
+                
+                Color_RGBA opIndex(size_t idx)
+                in {
+                    assert(idx < allMyPixels.length);
+                } body {
+                    return allMyPixels[idx];
+                }
+                
+                @property size_t length() {
+                    return allMyPixels.length;
+                }
+
+                // InputRange
+
+                @property Color_RGBA front() {
+                    return allMyPixels[index];
+                }
+
+                Color_RGBA moveFront() {
+                    Color_RGBA ret = allMyPixels[index];
+                    index++;
+                    return ret;
+                }
+
+                void popFront() {
+                    index++;
+                }
+
+                @property bool empty() {
+                    return allMyPixels.length >= index;
+                }
+
+                int opApply(int delegate(Color_RGBA) del) {
+                    foreach(ref pixel; allMyPixels) {
+                        if (auto ret = del(pixel))
+                            return ret;
+                    }
+
+                    return 0;
+                }
+
+                int opApply(int delegate(size_t, Color_RGBA) del) {
+                    foreach(i, ref pixel; allMyPixels) {
+                        if (auto ret = del(i, pixel))
+                            return ret;
+                    }
+
+                    return 0;
+                }
+            }
+            
+            return new RGBAClasz;
+        }
     }
 }
 

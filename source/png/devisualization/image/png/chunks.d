@@ -130,7 +130,7 @@ struct IDAT_Chunk {
 }
 
 class IDAT_Chunk_Pixel {
-    private bool used_color;
+    const bool used_color;
     
     union {
         ushort value;

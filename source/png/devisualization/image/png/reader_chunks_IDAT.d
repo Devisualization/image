@@ -55,13 +55,19 @@ void handle_IDAT_chunk(PngImage _, ubyte[] chunkData) {
 
         if (IHDR.interlaceMethod == PngIHDRInterlaceMethod.Adam7) {
             // TODO: un Adam7 algo IDAT.unfiltered_uncompressed_pixels
-
         } else if (IHDR.interlaceMethod == PngIHDRInterlaceMethod.NoInterlace) {
         } else {
             throw new NotAnImageException("Invalid image filter method");
         }
 
         // TODO: turn IDAT.unfiltered_uncompressed_pixels into something usable
+        foreach(pixel; IDAT.unfiltered_uncompressed_pixels) {
+            if (pixel.used_color) {
+                allMyPixels ~= Color_RGBA(pixel.r, pixel.g, pixel.b, pixel.a);
+            } else {
+                // TODO: e.g. grayscale, palleted
+            }
+        }
     }
 }
 

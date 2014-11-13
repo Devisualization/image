@@ -25,7 +25,10 @@ module test;
 
 void main() {
     import devisualization.image;
+    import std.stdio;
 
     Image img = imageFromFile("test/myfile.png");
+    writeln("===============\nREAD\n===============");
 
+    writeln(img.rgba.allPixels);
 }

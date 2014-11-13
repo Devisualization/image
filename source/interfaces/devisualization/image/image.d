@@ -22,8 +22,36 @@
  * SOFTWARE.
  */
 module devisualization.image.image;
+import std.range : InputRange;
 
 interface Image {
+    @property {
+        ImagePixels!Color_RGBA rgba();
+    }
+}
+
+
+interface ImagePixels(COLOR) : InputRange!COLOR {
+    @property COLOR[] allPixels();
+    COLOR opIndex(size_t idx);
+    @property size_t length();
+}
+
+struct Color_RGBA {
+    ushort r;
+    ushort g;
+    ushort b;
+    ushort a;
+
+    string toString() {
+        import std.format : formattedWrite;
+        import std.array : appender;
+        
+        auto writer = appender!string();
+        formattedWrite(writer, "[r: %d g: %d b: %d a: %d]", r, g, b, a);
+        
+        return writer.data();
+    }
 }
 
 alias NotAnImageException = Exception;
