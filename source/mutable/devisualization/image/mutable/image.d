@@ -9,7 +9,11 @@ class MutableImage : Image {
         size_t totalSize;
     }
 
-    this(size_t width, size_t height, Color_RGBA[] pixels) {
+    this(Image from) {
+        this(from.width, from.height, from.rgba.allPixels);
+    }
+
+    this(size_t width, size_t height, Color_RGBA[] pixels = []) {
         width_ = width;
         height_ = height;
         totalSize = width * height;
@@ -22,7 +26,7 @@ class MutableImage : Image {
 
         size_t row;
         foreach(i, pixel; pixels) {
-            if (row >= allMyPixels.length) {}
+            if (row >= allMyPixels.length)
                 allMyPixels.length++;
             allMyPixels[row] ~= pixel;
 
@@ -35,6 +39,8 @@ class MutableImage : Image {
             // append
             row = allMyPixels.length / width;
             for(size_t i = allMyPixels.length; i < totalSize; i++) {
+                if (row >= allMyPixels.length)
+                    allMyPixels.length++;
                 allMyPixels[row] ~= Color_RGBA(0, 0, 0, 0);
 
                 if (i % width == width - 1)
@@ -67,14 +73,14 @@ class MutableImage : Image {
                 in {
                     assert(idx < allMyPixels.length);
                 } body {
-                    return allMyPixels[xFromIndex(idx)][yFromIndex(idx)];
+                    return allMyPixels[yFromIndex(idx)][xFromIndex(idx)];
                 }
 
                 void opIndexAssign(Color_RGBA newValue, size_t idx)
                 in {
                     assert(idx < allMyPixels.length);
                 } body {
-                    allMyPixels[xFromIndex(idx)][yFromIndex(idx)] = newValue;
+                    allMyPixels[yFromIndex(idx)][xFromIndex(idx)] = newValue;
                 }
                 
                 @property size_t length() {
@@ -82,11 +88,11 @@ class MutableImage : Image {
                 }
 
                 size_t xFromIndex(size_t idx) {
-                    return idx / width;
+                    return idx % width;
                 }
                 
                 size_t yFromIndex(size_t idx) {
-                    return idx % height;
+                    return idx / width;
                 }
                 
                 size_t indexFromXY(size_t x, size_t y) {
@@ -96,11 +102,11 @@ class MutableImage : Image {
                 // InputRange
 
                 @property Color_RGBA front() {
-                    return allMyPixels[index/width][index % height];
+                    return allMyPixels[yFromIndex(index)][xFromIndex(index)];
                 }
                 
                 Color_RGBA moveFront() {
-                    Color_RGBA ret = allMyPixels[width / index][height % index];
+                    Color_RGBA ret = allMyPixels[yFromIndex(index)][xFromIndex(index)];
                     index++;
                     return ret;
                 }
@@ -149,4 +155,13 @@ class MutableImage : Image {
             return height_;
         }
     }
+}
+
+unittest {
+    Image image = new MutableImage(1, 2);
+    image.rgba[0] = Color_RGBA(0, 0, 0, 0);
+    image.rgba[1] = Color_RGBA(255, 255, 255, 255);
+
+    assert(image.rgba[0] == Color_RGBA(0, 0, 0, 0));
+    assert(image.rgba[1] == Color_RGBA(255, 255, 255, 255));
 }
