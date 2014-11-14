@@ -102,3 +102,24 @@ ubyte[4][] ubyteRawColor(Color_RGBA[] pixels) {
 
     return ret;
 }
+
+Color_RGBA[] colorsFromArray(ubyte[][] data) {
+    Color_RGBA[] ret;
+    float ubyteToUShort = ushort.max / ubyte.max;
+
+    foreach(datem; data) {
+        ushort r = datem.length > 0 ? datem[0] : 0;
+        ushort g = datem.length > 1 ? datem[1] : 0;
+        ushort b = datem.length > 2 ? datem[2] : 0;
+        ushort a = datem.length > 3 ? datem[3] : 0;
+
+        r *= ubyteToUShort;
+        g *= ubyteToUShort;
+        b *= ubyteToUShort;
+        a *= ubyteToUShort;
+
+        ret ~= new Color_RGBA(r, g, b, a);
+    }
+
+    return ret;
+}
