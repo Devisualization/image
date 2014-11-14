@@ -38,7 +38,11 @@ class PngImage : Image {
     gAMA_Chunk gAMA;
 
     Color_RGBA[] allMyPixels;
-    
+
+    this(Image from) {
+        assert(0, "TODO: not implemented");
+    }
+
     this(ubyte[] data) {
         import devisualization.image.png.reader;
         parsePng(this, data);
@@ -133,6 +137,12 @@ class PngImage : Image {
             return IHDR.height;
         }
     }
+
+    @disable
+    ubyte[] exportFrom() { return null; }
+    
+    @disable
+    void exportTo(string file) {}
 }
 
 enum PngTextKeywords : string {

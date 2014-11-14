@@ -155,6 +155,12 @@ class MutableImage : Image {
             return height_;
         }
     }
+
+    @disable
+    ubyte[] exportFrom() { return null; }
+
+    @disable
+    void exportTo(string file) {}
 }
 
 unittest {

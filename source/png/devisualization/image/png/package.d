@@ -32,5 +32,10 @@ shared static this() {
         return new PngImage(data);
     }
 
+    Image converter(Image data) {
+        return new PngImage(data);
+    }
+
     registerImageLoader("png", &loader);
+    registerImageConvertTo("png", &converter);
 }

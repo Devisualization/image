@@ -25,12 +25,17 @@ module devisualization.image.image;
 import std.range : InputRange;
 
 interface Image {
+    //this(Image from);
+
     @property {
         ImagePixels!Color_RGBA rgba();
 
         size_t width();
         size_t height();
     }
+
+    ubyte[] exportFrom();
+    void exportTo(string file);
 }
 
 

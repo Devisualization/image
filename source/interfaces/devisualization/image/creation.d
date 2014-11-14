@@ -41,8 +41,13 @@ Image imageFromData(string type, ubyte[] data) {
 
 private {
     __gshared Image delegate(ubyte[])[string] loaders;
+    __gshared Image delegate(Image)[string] convertTo;
 }
 
 void registerImageLoader(string ext, Image delegate(ubyte[] data) loader) {
     loaders[ext] = loader;
+}
+
+void registerImageConvertTo(string ext, Image delegate(Image) converter) {
+    convertTo[ext] = converter;
 }
