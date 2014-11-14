@@ -63,7 +63,7 @@ void handle_IDAT_chunk(PngImage _, ubyte[] chunkData) {
         // TODO: turn IDAT.unfiltered_uncompressed_pixels into something usable
         foreach(pixel; IDAT.unfiltered_uncompressed_pixels) {
             if (pixel.used_color) {
-                allMyPixels ~= Color_RGBA(pixel.r, pixel.g, pixel.b, pixel.a);
+                allMyPixels ~= new Color_RGBA(pixel.r, pixel.g, pixel.b, pixel.a);
             } else {
                 // TODO: e.g. grayscale, palleted
             }

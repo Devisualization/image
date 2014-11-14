@@ -32,7 +32,7 @@ void main() {
     Image img = imageFromFile("test/myfile.png");
     writeln("===============\nREAD\n===============");
 
-    img.rgba[3] = Color_RGBA(1, 1, 1, 1);
+    img.rgba[3] = new Color_RGBA(1, 1, 1, 1);
     writeln(img.rgba.allPixels);
     writeln("width: ", img.width);
     writeln("height: ", img.height);
@@ -42,7 +42,7 @@ void main() {
 
     img = new MutableImage(img);
 
-    img.rgba[3] = Color_RGBA(2, 2, 2, 2);
+    img.rgba[3] = new Color_RGBA(2, 2, 2, 2);
 
     writeln(img.rgba.allPixels);
     writeln("width: ", img.width);
