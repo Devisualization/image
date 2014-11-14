@@ -68,3 +68,14 @@ class Color_RGBA {
         }
     }
 }
+
+ubyte[4][] ubyteRawColor(Color_RGBA[] pixels) {
+    ubyte[4][] ret;
+    ret.length = pixels.length;
+
+    foreach(i, pixel; pixels) {
+        ret[i] = pixel.ubytes;
+    }
+
+    return ret;
+}
