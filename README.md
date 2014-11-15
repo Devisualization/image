@@ -10,15 +10,16 @@ TODO
 -----
 __Common:__
 - More formats other then PNG format e.g. TIFF, BMP.
-- Memory Image "format"
-- Common manipulation interface in Image
+- Common manipulation actions such as resizing, scaling, rotate
 
 __PNG:__
 Importing:
-- Pixel export to usable format
 - Adam7 interlacing undo'ing
 - Chunks: BKGD, hIST, pHYs, tIME, tRNS, zTXt
 - Applying color manipulation (gAMA chunk)
+- Non rgba color convertion to usable type
 
 Exporting:
-- Not started
+- IDAT chunk
+- Chunks: BKGD, hIST, pHYs, tIME, tRNS, zTXt
+- Color correction (can we even get this?) (gAMA chunk)
