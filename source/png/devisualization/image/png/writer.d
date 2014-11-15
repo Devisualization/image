@@ -1,7 +1,7 @@
 ﻿module devisualization.image.png.write;
 import devisualization.image.png.defs;
 import devisualization.image.png.writer_chunks;
-import devisualization.image.png.writer_chunks_idat;
+import devisualization.image.png.writer_chunks_IDAT;
 
 ubyte[] writePNG(PngImage image) {
     ubyte[] ret = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
