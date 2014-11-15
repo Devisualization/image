@@ -40,7 +40,15 @@ class PngImage : Image {
     Color_RGBA[] allMyPixels;
 
     this(Image from) {
-        assert(0, "TODO: not implemented");
+        IHDR.width = from.width;
+        IHDR.height = from.height;
+        IHDR.bitDepth = PngIHDRBitDepth.BitDepth8;
+        IHDR.colorType = PngIHDRColorType.ColorUsedWithAlpha;
+        IHDR.compressionMethod = PngIHDRCompresion.DeflateInflate;
+        IHDR.filterMethod = PngIHDRFilter.Adaptive;
+        IHDR.interlaceMethod = PngIHDRInterlaceMethod.NoInterlace;
+
+        allMyPixels = from.rgba.allPixels;
     }
 
     this(ubyte[] data) {
