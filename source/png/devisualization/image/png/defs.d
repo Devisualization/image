@@ -138,11 +138,15 @@ class PngImage : Image {
         }
     }
 
-    @disable
-    ubyte[] exportFrom() { return null; }
-    
-    @disable
-    void exportTo(string file) {}
+    ubyte[] exportFrom() {
+        import devisualization.image.png.write;
+        return writePNG(this);
+    }
+
+    void exportTo(string file) {
+        import std.file : write;
+        write(file, exportFrom());
+    }
 }
 
 enum PngTextKeywords : string {

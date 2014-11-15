@@ -40,6 +40,8 @@ void main() {
         writefln("%d: %s", i, pixel);
     }
 
+    img.exportTo("test_output.png");
+
     img = new MutableImage(img);
 
     img.rgba[3] = new Color_RGBA(2, 2, 2, 2);
