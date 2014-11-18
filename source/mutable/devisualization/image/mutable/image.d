@@ -165,9 +165,9 @@ class MutableImage : Image {
 
 unittest {
     Image image = new MutableImage(1, 2);
-    image.rgba[0] = Color_RGBA(0, 0, 0, 0);
-    image.rgba[1] = Color_RGBA(255, 255, 255, 255);
+    image.rgba[0] = new Color_RGBA(0, 0, 0, 0);
+    image.rgba[1] = new Color_RGBA(255, 255, 255, 255);
 
-    assert(image.rgba[0] == Color_RGBA(0, 0, 0, 0));
-    assert(image.rgba[1] == Color_RGBA(255, 255, 255, 255));
+    assert(image.rgba[0] == new Color_RGBA(0, 0, 0, 0));
+    assert(image.rgba[1] == new Color_RGBA(255, 255, 255, 255));
 }
