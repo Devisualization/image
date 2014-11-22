@@ -1,28 +1,28 @@
 {
-	"name": "de_image",
-	"description": "Image loading and exporting Devisualization",
-	"copyright": "Copyright © 2014, Richard Andrew Cattermole, Devisualization",
-	"authors": ["Richard Andrew Cattermole"],
-	"homepage": "https://github.com/Devisualization/image",
-	"license": "MIT",
+    "name": "de_image",
+    "description": "Image loading and exporting Devisualization",
+    "copyright": "Copyright © 2014, Richard Andrew Cattermole, Devisualization",
+    "authors": ["Richard Andrew Cattermole"],
+    "homepage": "https://github.com/Devisualization/image",
+    "license": "MIT",
     "targetType": "none",
-	"sourcePaths": [],
-	"subPackages": [
-		{
-			"name": "interfaces",
-			"targetType": "library",
-			"sourcePaths": ["source/interfaces"],
-			"importPaths": ["source/interfaces"]
-		},
-		{
-			"name": "png",
-			"targetType": "library",
-			"sourcePaths": ["source/png"],
-			"importPaths": ["source/png"],
-			"dependencies": {
-				"de_image:interfaces": "*"
-			}
-		},
+    "sourcePaths": [],
+    "subPackages": [
+        {
+            "name": "interfaces",
+            "targetType": "library",
+            "sourcePaths": ["source/interfaces"],
+            "importPaths": ["source/interfaces"]
+        },
+        {
+            "name": "png",
+            "targetType": "library",
+            "sourcePaths": ["source/png"],
+            "importPaths": ["source/png"],
+            "dependencies": {
+                "de_image:interfaces": "*"
+            }
+        },
         {
             "name": "mutable",
             "targetType": "library",
@@ -32,22 +32,22 @@
                 "de_image:interfaces": "*"
             }
         },
-		{
-			"name": "common",
-			"targetType": "library",
-			"sourcePaths": [],
-			"dependencies": {
+        {
+            "name": "common",
+            "targetType": "library",
+            "sourcePaths": [],
+            "dependencies": {
                 "de_image:png": "*",
-				"de_image:mutable": "*"
-			}
-		},
-		{
-			"name": "test",
-			"targetType": "executable",
-			"dependencies": {
+                "de_image:mutable": "*"
+            }
+        },
+        {
+            "name": "test",
+            "targetType": "executable",
+            "dependencies": {
                 "de_image:png": "*",
-				"de_image:mutable": "*"
-			}
-		}
-	]
+                "de_image:mutable": "*"
+            }
+        }
+    ]
 }
