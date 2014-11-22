@@ -35,7 +35,7 @@ package {
         t ~= data;
         t ~= crc32Of(t);
 
-        ret ~= nativeToBigEndian!uint(t.length);
+        ret ~= nativeToBigEndian!uint(cast(uint)t.length);
         ret ~= t;
     }
 }

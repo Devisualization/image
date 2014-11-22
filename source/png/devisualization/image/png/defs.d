@@ -40,8 +40,8 @@ class PngImage : Image {
     Color_RGBA[] allMyPixels;
 
     this(Image from) {
-        IHDR.width = from.width;
-        IHDR.height = from.height;
+        IHDR.width = cast(uint)from.width;
+        IHDR.height = cast(uint)from.height;
         IHDR.bitDepth = PngIHDRBitDepth.BitDepth8;
         IHDR.colorType = PngIHDRColorType.ColorUsedWithAlpha;
         IHDR.compressionMethod = PngIHDRCompresion.DeflateInflate;
