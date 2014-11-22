@@ -23,6 +23,8 @@
  */
 module devisualization.image.color;
 
+enum float ubyteToUshort = ushort.max / ubyte.max;
+
 class Color_RGBA {
     ushort r;
     ushort g;
@@ -31,25 +33,15 @@ class Color_RGBA {
 
     this(float r, float g, float b, float a)
     in {
-        assert(r >= -1 && r <= 1);
-        assert(g >= -1 && g <= 1);
-        assert(b >= -1 && b <= 1);
-        assert(a >= -1 && a <= 1);
+        assert(r >= 0 && r <= 1);
+        assert(g >= 0 && g <= 1);
+        assert(b >= 0 && b <= 1);
+        assert(a >= 0 && a <= 1);
     } body {
-        // 0 .. 2
-        r += 1;
-        g += 1;
-        b += 1;
-        a += 1;
-
-        // max size of ushort / 2 (because range max is 2)
-        float mul = ushort.max / 2;
-
-        // e.g. mul == 50 (100 max) * .5 == 25 (.5 is 1/4'th of 2)
-        r *= mul;
-        g *= mul;
-        b *= mul;
-        a *= mul;
+        this.r = cast(ushort)(r * ushort.max);
+        this.g = cast(ushort)(g * ushort.max);
+        this.b = cast(ushort)(b * ushort.max);
+        this.a = cast(ushort)(a * ushort.max);
     }
 
     this(ushort r, ushort g, ushort b, ushort a) {
@@ -71,19 +63,19 @@ class Color_RGBA {
 
     @property {
         ubyte r_ubyte() {
-            return cast(ubyte)(r / 256);
+            return cast(ubyte)(r / ubyteToUshort);
         }
 
         ubyte g_ubyte() {
-            return cast(ubyte)(g / 256);
+            return cast(ubyte)(g / ubyteToUshort);
         }
 
         ubyte b_ubyte() {
-            return cast(ubyte)(b / 256);
+            return cast(ubyte)(b / ubyteToUshort);
         }
 
         ubyte a_ubyte() {
-            return cast(ubyte)(a / 256);
+            return cast(ubyte)(a / ubyteToUshort);
         }
 
         ubyte[4] ubytes() {
@@ -105,7 +97,6 @@ ubyte[4][] ubyteRawColor(Color_RGBA[] pixels) {
 
 Color_RGBA[] colorsFromArray(ubyte[][] data) {
     Color_RGBA[] ret;
-    float ubyteToUShort = ushort.max / ubyte.max;
 
     foreach(datem; data) {
         ushort r = datem.length > 0 ? datem[0] : 0;
@@ -113,10 +104,10 @@ Color_RGBA[] colorsFromArray(ubyte[][] data) {
         ushort b = datem.length > 2 ? datem[2] : 0;
         ushort a = datem.length > 3 ? datem[3] : 255;
 
-        r *= ubyteToUShort;
-        g *= ubyteToUShort;
-        b *= ubyteToUShort;
-        a *= ubyteToUShort;
+        r *= ubyteToUshort;
+        g *= ubyteToUshort;
+        b *= ubyteToUshort;
+        a *= ubyteToUshort;
 
         ret ~= new Color_RGBA(r, g, b, a);
     }
