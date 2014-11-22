@@ -63,7 +63,14 @@ void handle_IDAT_chunk(PngImage _, ubyte[] chunkData) {
         // TODO: turn IDAT.unfiltered_uncompressed_pixels into something usable
         foreach(pixel; IDAT.unfiltered_uncompressed_pixels) {
             if (pixel.used_color) {
-                allMyPixels ~= new Color_RGBA(pixel.r, pixel.g, pixel.b, pixel.a);
+                if (IHDR.bitDepth == PngIHDRBitDepth.BitDepth16) {
+                    allMyPixels ~= new Color_RGBA(pixel.r, pixel.g, pixel.b, pixel.a);
+                } else if (IHDR.bitDepth == PngIHDRBitDepth.BitDepth8) {
+                    allMyPixels ~= new Color_RGBA(cast(ushort)(pixel.r * ubyteToUshort),
+                                                  cast(ushort)(pixel.g * ubyteToUshort),
+                                                  cast(ushort)(pixel.b * ubyteToUshort),
+                                                  cast(ushort)(pixel.a * ubyteToUshort));
+                }
             } else {
                 // TODO: e.g. grayscale, palleted
             }
@@ -114,18 +121,25 @@ out ubyte[] uncompressed, out size_t expectedSize, out size_t colorSize) {
 
 ubyte[][] grabPixelsRawData(PngImage _, ubyte[] rawData, ref ubyte[] adaptiveOffsets, size_t colorSize) {
     ubyte[][] ret;
-    with(_) {
-        for(size_t i = 0; i < rawData.length -1; i += colorSize) {
-            if (IHDR.filterMethod == PngIHDRFilter.Adaptive) {
-                adaptiveOffsets ~= rawData[i];
-                ret ~= rawData[i + 1 .. i + colorSize + 1];
-            } // else if ...
 
+    with(_) {
+        size_t sinceLast = IHDR.width - 1;
+        size_t i;
+
+        while(i < rawData.length) {
             if (IHDR.filterMethod == PngIHDRFilter.Adaptive) {
-                if (i % IHDR.width == IHDR.width - 2) {
+                if (sinceLast == IHDR.width - 1) {
                     // finished a scan line
+                    adaptiveOffsets ~= rawData[i];
+                    sinceLast = 0;
                     i++;
+                } else {
+                    sinceLast++;
                 }
+
+                ret ~= rawData[i .. i + colorSize];
+
+                i += colorSize;
             } // else if ...
         }
     }
