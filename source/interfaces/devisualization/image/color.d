@@ -82,6 +82,10 @@ class Color_RGBA {
             return [r_ubyte, g_ubyte, b_ubyte, a_ubyte];
         }
     }
+
+	static Color_RGBA fromUbytes(ubyte r, ubyte g, ubyte b, ubyte a) {
+		return new Color_RGBA(r * ubyteToUshort, g * ubyteToUshort, b * ubyteToUshort, a * ubyteToUshort);
+	}
 }
 
 ubyte[4][] ubyteRawColor(Color_RGBA[] pixels) {
