@@ -20,6 +20,6 @@ Importing:
 - Non rgba color convertion to usable type
 
 Exporting:
-- IDAT chunk
+- Adam7 interlacing do'ing
 - Chunks: BKGD, hIST, pHYs, tIME, tRNS, zTXt
 - Color correction (can we even get this?) (gAMA chunk)
