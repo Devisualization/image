@@ -84,10 +84,10 @@ class Color_RGBA {
     }
 
 	static Color_RGBA fromUbyte(ubyte r, ubyte g, ubyte b, ubyte a) {
-		return new Color_RGBA(cast(ubyte)(r * ubyteToUshort),
-		                      cast(ubyte)(g * ubyteToUshort),
-		                      cast(ubyte)(b * ubyteToUshort),
-		                      cast(ubyte)(a * ubyteToUshort));
+		return new Color_RGBA(cast(ushort)(r * ubyteToUshort),
+		                      cast(ushort)(g * ubyteToUshort),
+		                      cast(ushort)(b * ubyteToUshort),
+		                      cast(ushort)(a * ubyteToUshort));
 	}
 }
 
