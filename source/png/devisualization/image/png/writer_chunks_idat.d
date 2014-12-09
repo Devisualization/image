@@ -24,8 +24,73 @@
 module devisualization.image.png.writer_chunks_IDAT;
 import devisualization.image.png.defs;
 import devisualization.image.png.write;
-import std.bitmanip : nativeToBigEndian;
+import devisualization.image;
 
-void write_IDAT(PngImage image, ref ubyte[] ret) {
-    // TODO: have not started yet
+void write_IDAT(PngImage _, ref ubyte[] ret) {
+	with(_) {
+		ubyte[] pixelData;
+
+		IDAT.unfiltered_uncompressed_pixels.length = allMyPixels.length;
+
+		foreach(i, color; allMyPixels) {
+			IDAT.unfiltered_uncompressed_pixels[i] = new IDAT_Chunk_Pixel(color);
+		}
+
+		//
+
+		if (IHDR.interlaceMethod == PngIHDRInterlaceMethod.Adam7) {
+			// TODO: un Adam7 algo IDAT.unfiltered_uncompressed_pixels
+		} else if (IHDR.interlaceMethod == PngIHDRInterlaceMethod.NoInterlace) {
+		} else {
+			throw new NotAnImageException("Invalid image filter method");
+		}
+
+		//
+
+		pixelData = pushPixelsRawData(_);
+
+		//
+		
+		if (IHDR.compressionMethod == PngIHDRCompresion.DeflateInflate) {
+			if (IHDR.compressionMethod == PngIHDRCompresion.DeflateInflate) {
+				pixelData = compressInflateDeflate(_, pixelData);
+			} else {
+				throw new NotAnImageException("Unknown compression method");
+			}
+		} else {
+			throw new NotAnImageException("Invalid image compression method");
+		}
+
+		//
+
+		writeChunk("IDAT", pixelData, ret);
+	}
+}
+
+ubyte[] pushPixelsRawData(PngImage _) {
+	ubyte[] ret;
+	
+	with(_) {
+		size_t i;
+		foreach(y; 0 .. height) {
+			if (IHDR.filterMethod == PngIHDRFilter.Adaptive) {
+				ret ~= 0;
+			} else {
+				throw new NotAnImageException("Invalid image filter method");
+			}
+
+			foreach(x; 0 .. width) {
+				ret ~= IDAT.unfiltered_uncompressed_pixels[i].exportValues(IHDR.colorType, IHDR.bitDepth == PngIHDRBitDepth.BitDepth16);
+				i++;
+			}
+		}
+	}
+	
+	return ret;
+}
+
+ubyte[] compressInflateDeflate(PngImage _, ubyte[] pixelData) {
+	import std.zlib : compress;
+
+	return cast(ubyte[])compress(pixelData);
 }

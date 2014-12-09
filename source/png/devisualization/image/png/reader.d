@@ -141,7 +141,7 @@ uint verifyCRC(char[4] chunkType, ubyte[] crcCodeBytes, ubyte[] crcCodeData) {
 
     crcCodeBytes.reverse();
     uint crcCode = *cast(uint*)crcCodeBytes.ptr;
-    
+
     if (crcHexString(crc32Of(crcCodeData)) != crcHexString(crcCodeBytes))
         throw new NotAnImageException("CRC code invalid for chunk " ~ cast(string)chunkType);
 

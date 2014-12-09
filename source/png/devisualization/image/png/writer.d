@@ -49,16 +49,17 @@ ubyte[] writePNG(PngImage image) {
 
 package {
     void writeChunk(char[4] name, ubyte[] data, ref ubyte[] ret) {
-        import std.algorithm : reverse;
-        import std.digest.crc : crc32Of, crcHexString;
+        import std.digest.crc : crc32Of;
         import std.bitmanip : nativeToBigEndian;
 
         ubyte[] t;
-        t ~= name;
+		t ~= name;
         t ~= data;
-        t ~= crc32Of(t);
+        
+		ubyte[4] crcBytes = crc32Of(t);
+		t ~= [crcBytes[3], crcBytes[2], crcBytes[1], crcBytes[0]];
 
-        ret ~= nativeToBigEndian!uint(cast(uint)t.length);
-        ret ~= t;
+		ret ~= nativeToBigEndian!uint(cast(uint)data.length);
+		ret ~= t;
     }
 }

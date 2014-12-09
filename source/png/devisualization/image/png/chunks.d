@@ -130,6 +130,7 @@ struct IDAT_Chunk {
 }
 
 class IDAT_Chunk_Pixel {
+	import devisualization.image;
     const bool used_color;
     
     union {
@@ -185,6 +186,14 @@ class IDAT_Chunk_Pixel {
             }
         }
     }
+
+	this(Color_RGBA color) {
+		this.r = color.r;
+		this.g = color.g;
+		this.b = color.b;
+		this.a = color.a;
+		this.used_color = true;
+	}
     
     override string toString() {
         import std.format : formattedWrite;
@@ -200,4 +209,35 @@ class IDAT_Chunk_Pixel {
         
         return writer.data();
     }
+
+	ubyte[] exportValues(PngIHDRColorType type, bool multibyte) {
+		import std.bitmanip : nativeToBigEndian;
+		if (type == PngIHDRColorType.Palette) {
+			if (multibyte) {
+				return nativeToBigEndian(value);
+			} else {
+				return [nativeToBigEndian(value)[1]];
+			}
+		} else if (type == PngIHDRColorType.PalletteWithColorUsed) {
+			if (multibyte) {
+				return nativeToBigEndian(value) ~ nativeToBigEndian(a);
+			} else {
+				return [nativeToBigEndian(value)[1], nativeToBigEndian(a)[1]];
+			}
+		} else if (type == PngIHDRColorType.ColorUsed) {
+			if (multibyte) {
+				return nativeToBigEndian(r) ~ nativeToBigEndian(g) ~ nativeToBigEndian(b);
+			} else {
+				return [cast(ubyte)(r/ubyteToUshort), cast(ubyte)(g/ubyteToUshort), cast(ubyte)(b/ubyteToUshort)];
+			}
+		} else if (type == PngIHDRColorType.ColorUsedWithAlpha) {
+			if (multibyte) {
+				return nativeToBigEndian(r) ~ nativeToBigEndian(g) ~ nativeToBigEndian(b) ~ nativeToBigEndian(a);
+			} else {
+				return [cast(ubyte)(r/ubyteToUshort), cast(ubyte)(g/ubyteToUshort), cast(ubyte)(b/ubyteToUshort), cast(ubyte)(a/ubyteToUshort)];
+			}
+		}
+
+		assert(0);
+	}
 }

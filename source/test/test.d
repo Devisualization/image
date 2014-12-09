@@ -29,10 +29,9 @@ void main() {
 
     import std.stdio;
 
-    Image img = imageFromFile("test/myfile.png");
-    writeln("===============\nREAD\n===============");
+	writeln("===============\nREAD\n===============");
+	Image img = imageFromFile("test/myfile.png");
 
-    img.rgba[3] = new Color_RGBA(1, 1, 1, 1);
     writeln(img.rgba.allPixels);
     writeln("width: ", img.width);
     writeln("height: ", img.height);
@@ -40,11 +39,24 @@ void main() {
         writefln("%d: %s", i, pixel);
     }
 
-    img.exportTo("test_output.png");
+	writeln("===============\nWRITE\n===============");
+	img.exportTo("test_output.png");
+
+	writeln("===============\nREAD - 2\n===============");
+	img = imageFromFile("test_output.png");
+
+	writeln(img.rgba.allPixels);
+	writeln("width: ", img.width);
+	writeln("height: ", img.height);
+	foreach(i, pixel; img.rgba) {
+		writefln("%d: %s", i, pixel);
+	}
+
+	writeln("===============\nMODIFY\n===============");
 
     img = new MutableImage(img);
 
-    img.rgba[3] = new Color_RGBA(2, 2, 2, 2);
+    img.rgba[2] = Color_RGBA.fromUbyte(2, 2, 2, 2);
 
     writeln(img.rgba.allPixels);
     writeln("width: ", img.width);
