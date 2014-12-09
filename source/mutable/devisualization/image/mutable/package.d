@@ -23,6 +23,7 @@
  */
 module devisualization.image.mutable;
 public import devisualization.image.mutable.image;
+public import devisualization.image.mutable.manipulation;
 
 shared static this() {
     import devisualization.image;
