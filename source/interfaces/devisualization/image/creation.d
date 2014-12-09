@@ -39,9 +39,17 @@ Image imageFromData(string type, ubyte[] data) {
     }
 }
 
+Image convertTo(Image from, string type) {
+	if (type in convertTos) {
+		return convertTos[type](from);
+	} else {
+		throw new NotAnImageException("Unknown file type");
+	}
+}
+
 private {
     __gshared Image delegate(ubyte[])[string] loaders;
-    __gshared Image delegate(Image)[string] convertTo;
+    __gshared Image delegate(Image)[string] convertTos;
 }
 
 void registerImageLoader(string ext, Image delegate(ubyte[] data) loader) {
@@ -49,5 +57,5 @@ void registerImageLoader(string ext, Image delegate(ubyte[] data) loader) {
 }
 
 void registerImageConvertTo(string ext, Image delegate(Image) converter) {
-    convertTo[ext] = converter;
+	convertTos[ext] = converter;
 }
