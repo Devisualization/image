@@ -33,6 +33,8 @@ void parsePng(PngImage _, ubyte[] data) {
     
     with(_) {
         
+		ubyte[] handleAllIDAT;
+
         // check if it is a PNG image
         if (data.length < 9) {
             throw new NotAnImageException("Image data is not of type png");
@@ -71,8 +73,12 @@ void parsePng(PngImage _, ubyte[] data) {
                         __traits(getMember, Chunk_Handlers, item)(_, chunkData);
                         handled = true;
                         break;
-                    }
+					}
                 }
+
+				if (chunkType == "IDAT") {
+					handleAllIDAT ~= chunkData;
+				}
 
                 if (!handled) {
                     // store this chunk
@@ -93,6 +99,8 @@ void parsePng(PngImage _, ubyte[] data) {
             }
         }
 
+		handle_IDAT_chunk(_, handleAllIDAT);
+
         // TODO: apply color manipulation such as gAMA
     }
 
@@ -106,7 +114,6 @@ private {
     enum Chunk_Handlers : void function(PngImage, ubyte[]) {
         IHDR = &handle_IHDR_chunk,
         PLTE = &handle_PLTE_chunk,
-        IDAT = &handle_IDAT_chunk,
         BKGD = &handle_BKGD_chunk,
         cHRM = &handle_cHRM_chunk,
         gAMA = &handle_gAMA_chunk,
