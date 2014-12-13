@@ -63,7 +63,7 @@ in {
  * 
  * Params:
  * 		old			=	The old image to copy from
- * 		angle		=	Angle from which to rotate, max 45
+ * 		angle		=	Angle from which to rotate, max 45. Negative angle skews to the left, otherwise right.
  * 		background	=	Empty pixels become this
  * 
  * Returns:
@@ -134,7 +134,7 @@ in {
  * 
  * Params:
  * 		old			=	The old image to copy from
- * 		angle		=	Angle from which to rotate, max 45
+ * 		angle		=	Angle from which to rotate, max 45. Negative angle skews to the left, otherwise right.
  * 		background	=	Empty pixels become this
  * 
  * Returns:
@@ -205,5 +205,33 @@ in {
 		yy += diffY;
 	}
 	
+	return ret;
+}
+
+/**
+ * Rotates an image 90 degrees.
+ *
+ * Params:
+ * 		_			=	The image
+ * 		clockwise	=	Rotate clockwise instead of anti-clockwise. Default: true
+ *
+ * Returns:
+ *		The rotated image.
+ */
+MutableImage rotate90(Image _, bool clockwise=true) {
+	MutableImage ret = new MutableImage(_.height, _.width);
+	auto __ = ret.rgba;
+
+	void cd(Color_RGBA c, size_t x, size_t yy) {
+		size_t y;
+		if (clockwise)
+			y = _.height - (yy + 1);
+		else
+			y = yy;
+
+		__[__.indexFromXY(y, x)] = c;
+	}
+	_.applyByY(&cd);
+
 	return ret;
 }
