@@ -2,6 +2,13 @@
 import devisualization.image.color;
 import devisualization.image.image;
 
+/**
+ * Acts as a foreach over the pixels based upon left to right.
+ * 
+ * Params:
+ * 		image	=	The image
+ * 		del		=	The delegate to call upon each pixel
+ */
 void applyByX(Image image, void delegate(Color_RGBA pixel, size_t x, size_t y) del) {
 	auto _ = image.rgba;
 
@@ -14,6 +21,13 @@ void applyByX(Image image, void delegate(Color_RGBA pixel, size_t x, size_t y) d
 	}
 }
 
+/**
+ * Acts as a foreach over the pixels based upon top to bottom.
+ * 
+ * Params:
+ * 		image	=	The image
+ * 		del		=	The delegate to call upon each pixel
+ */
 void applyByY(Image image, void delegate(Color_RGBA pixel, size_t x, size_t y) del) {
 	auto _ = image.rgba;
 
