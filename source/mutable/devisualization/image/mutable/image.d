@@ -25,8 +25,8 @@ module devisualization.image.mutable.image;
 import devisualization.image;
 
 class MutableImage : Image {
-    Color_RGBA[][] allMyPixels;
-    private {
+	package {
+		Color_RGBA[][] allMyPixels;
         size_t width_;
         size_t height_;
         size_t totalSize;
@@ -53,7 +53,7 @@ class MutableImage : Image {
                 allMyPixels.length++;
             allMyPixels[row] ~= pixel;
 
-            if (i % width - 1) {
+            if (i % width == width -1) {
                 row++;
             }
         }
@@ -66,7 +66,7 @@ class MutableImage : Image {
                     allMyPixels.length++;
                 allMyPixels[row] ~= new Color_RGBA(0, 0, 0, 0);
 
-                if (i % width == width - 1)
+				if (i % width == width -1)
                     row++;
             }
         }
@@ -96,7 +96,7 @@ class MutableImage : Image {
                 in {
                     assert(idx < allMyPixels.length);
                 } body {
-                    return allMyPixels[yFromIndex(idx)][xFromIndex(idx)];
+					return allMyPixels[yFromIndex(idx)][xFromIndex(idx)];
                 }
 
                 void opIndexAssign(Color_RGBA newValue, size_t idx)
