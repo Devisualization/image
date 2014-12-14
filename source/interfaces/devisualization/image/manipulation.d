@@ -85,3 +85,49 @@ void applyByY(Image image, void delegate(Color_RGBA pixel, size_t x, size_t y) d
 		}
 	}
 }
+
+/**
+ * Copies one image into another.
+ * 
+ * Params:
+ * 		from		=	The image to copy from
+ * 		into		=	The destination image
+ * 		startx		=	Starting x coordinate to copy into. Default 0
+ * 		starty		=	Starting y coordinate to copy into. Default 0
+ */
+void copyInto(Image from, Image into, size_t startx=0, size_t starty=0) {
+	from.copyInto(into, startx, starty, from.width, from.height);
+}
+
+/**
+ * Copies one image into another.
+ * 
+ * Params:
+ * 		from		=	The image to copy from
+ * 		into		=	The destination image
+ * 		startx		=	Starting x coordinate to copy into
+ * 		starty		=	Starting y coordinate to copy into
+ * 		width		=	The amount of image to copy from
+ * 		height		=	The amount of image to copy from
+ */
+void copyInto(Image from, Image into, size_t startx, size_t starty, size_t width, size_t height)
+in {
+	assert(startx + width < into.width);
+	assert(starty + height < into.height);
+} body {
+	auto _ = from.rgba;
+	auto __ = into.rgba;
+
+	size_t x;
+	foreach(x2; startx .. width) {
+		size_t y;
+
+		foreach(y2; starty .. height) {
+			__[__.indexFromXY(x2, y2)] = _[_.indexFromXY(x, y)];
+
+			y++;
+		}
+
+		x++;
+	}
+}
