@@ -2,6 +2,7 @@
 import devisualization.image.mutable.image;
 public import devisualization.image.manipulation;
 import devisualization.image;
+import devisualization.util.core.linegraph;
 
 /**
  * Resizes and crops an image.
@@ -234,4 +235,178 @@ MutableImage rotate90(Image _, bool clockwise=true) {
 	_.applyByY(&cd);
 
 	return ret;
+}
+
+/**
+ * Applies a Convolution-2d filter upon an image
+ *
+ * Params:
+ * 		_		=	The image to apply the filter to
+ *		k_		=	The kernel for how to apply the filter
+ * 		ret		=	The output instance of MutableImage to put into
+ * 		paths	=	Paths to get the pixels from
+ *
+ * See_Also:
+ *		http://www.songho.ca/dsp/convolution/convolution.html#convolution_2d
+ *
+ * Returns:
+ *		The filtered image
+ */
+void convolution2d(Image _, Image k_, ref MutableImage ret, LineGraph[] paths...) {
+	import std.math : floor;
+
+	auto __ = ret.rgba;
+	auto ___ = _.rgba;
+	auto k___ = k_.rgba;
+	
+	size_t cx = cast(size_t)floor(k_.width / 2f);
+	size_t cy = cast(size_t)floor(k_.height / 2f);
+
+	void p(size_t i, size_t j) {
+		__[__.indexFromXY(j, i)].r = 0;
+		__[__.indexFromXY(j, i)].g = 0;
+		__[__.indexFromXY(j, i)].b = 0;
+		__[__.indexFromXY(j, i)].a = ___[___.indexFromXY(j, i)].a;
+		
+		for(size_t m = 0; m < k_.height; m++) {
+			size_t mm = k_.height - 1 - m;
+			
+			for(size_t n = 0; n < k_.width; n++) {
+				size_t nn = k_.width - 1 - n;
+				
+				ptrdiff_t ii = i + (m - cy);
+				ptrdiff_t jj = j + (n - cx);
+				
+				if (ii >= 0 && ii < _.height && jj >= 0 && jj < _.width) {
+					float fr = (k___[k___.indexFromXY(nn, mm)].r + 0f) / ushort.max;
+					float fg = (k___[k___.indexFromXY(nn, mm)].g + 0f) / ushort.max;
+					float fb = (k___[k___.indexFromXY(nn, mm)].b + 0f) / ushort.max;
+					
+					__[__.indexFromXY(j, i)].r += cast(ushort)(___[___.indexFromXY(jj, ii)].r * fr);
+					__[__.indexFromXY(j, i)].g += cast(ushort)(___[___.indexFromXY(jj, ii)].g * fg);
+					__[__.indexFromXY(j, i)].b += cast(ushort)(___[___.indexFromXY(jj, ii)].b * fb);
+				}
+				
+			}
+		}
+	}
+	foreach(path; paths) {
+		path.apply(&p);
+	}
+}
+
+
+/**
+ * Applies a Convolution-2d filter upon an image
+ *
+ * Params:
+ * 		_	=	The image to apply the filter to
+ *		k_	=	The kernel for how to apply the filter
+ *
+ * See_Also:
+ *		http://www.songho.ca/dsp/convolution/convolution.html#convolution_2d
+ *
+ * Returns:
+ *		The filtered image
+ */
+MutableImage convolution2d(Image _, Image k_) {
+	import std.math : floor;
+
+	MutableImage ret = new MutableImage(_.width, _.height);
+	auto __ = ret.rgba;
+	auto ___ = _.rgba;
+	auto k___ = k_.rgba;
+
+	size_t cx = cast(size_t)floor(k_.width / 2f);
+	size_t cy = cast(size_t)floor(k_.height / 2f);
+
+	for (size_t i = 0; i < _.height; i++) {
+		for(size_t j = 0; j < _.width; j++) {
+			__[__.indexFromXY(j, i)].r = 0;
+			__[__.indexFromXY(j, i)].g = 0;
+			__[__.indexFromXY(j, i)].b = 0;
+			__[__.indexFromXY(j, i)].a = ___[___.indexFromXY(j, i)].a;
+
+			for(size_t m = 0; m < k_.height; m++) {
+				size_t mm = k_.height - 1 - m;
+
+				for(size_t n = 0; n < k_.width; n++) {
+					size_t nn = k_.width - 1 - n;
+
+					ptrdiff_t ii = i + (m - cy);
+					ptrdiff_t jj = j + (n - cx);
+
+					if (ii >= 0 && ii < _.height && jj >= 0 && jj < _.width) {
+						float fr = (k___[k___.indexFromXY(nn, mm)].r + 0f) / ushort.max;
+						float fg = (k___[k___.indexFromXY(nn, mm)].g + 0f) / ushort.max;
+						float fb = (k___[k___.indexFromXY(nn, mm)].b + 0f) / ushort.max;
+
+						__[__.indexFromXY(j, i)].r += cast(ushort)(___[___.indexFromXY(jj, ii)].r * fr);
+						__[__.indexFromXY(j, i)].g += cast(ushort)(___[___.indexFromXY(jj, ii)].g * fg);
+						__[__.indexFromXY(j, i)].b += cast(ushort)(___[___.indexFromXY(jj, ii)].b * fb);
+					}
+
+				}
+			}
+		}
+	}
+
+	return ret;
+}
+
+/**
+ * Applies a gaussian blur based with a custom kernel applied.
+ * Uses a standard kernel from: http://www.songho.ca/dsp/convolution/convolution.html#convolution_2d
+ * 
+ * Params:
+ * 		_		=	The image to filter
+ * 
+ * See_Also:
+ * 		http://www.songho.ca/dsp/convolution/convolution.html#convolution_2d
+ * 
+ * Returns:
+ * 		The blured image
+ */
+MutableImage gaussianBlur(Image _) {
+	static __gshared Image filter;
+	if (filter is null) {
+		filter = new MutableImage(3, 3, 
+           [new Color_RGBA(1/16f, 1/16f, 1/16f, 1/16f), new Color_RGBA(2/16f, 2/16f, 2/16f, 2/16f), new Color_RGBA(1/16f, 1/16f, 1/16f, 1/16f), 
+			new Color_RGBA(2/16f, 2/16f, 2/16f, 2/16f), new Color_RGBA(4/16f, 4/16f, 4/16f, 4/16f), new Color_RGBA(2/16f, 2/16f, 2/16f, 2/16f), 
+			new Color_RGBA(1/16f, 1/16f, 1/16f, 1/16f), new Color_RGBA(2/16f, 2/16f, 2/16f, 2/16f), new Color_RGBA(1/16f, 1/16f, 1/16f, 1/16f)]);
+	}
+
+	return convolution2d(_, filter);
+}
+
+/**
+ * Applies a gaussian blur based with a custom kernel applied.
+ * 
+ * Params:
+ * 		_		=	The image to filter
+ * 		radius	=	The radius of the blur
+ * 		weight	=	Weighting of the blur
+ * 
+ * Returns:
+ * 		The blured image
+ */
+MutableImage gaussianBlur(Image _, size_t radius, float weight) {
+	return null;
+}
+
+/**
+ * Creates a kernel for a gaussian blur
+ * 
+ * Params:
+ * 		radius	=	The radius of the blur
+ * 		weight	=	Weighting of the blur
+ * 
+ * See_Also:
+ * 		http://www.apileofgrains.nl/blur-filters-c/
+ * 
+ * Returns:
+ * 		The kernel
+ */
+Image gaussianBlurKernel(size_t radius, float weight) {
+	return null;
 }

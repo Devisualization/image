@@ -29,7 +29,8 @@
             "sourcePaths": ["source/mutable"],
             "importPaths": ["source/mutable"],
             "dependencies": {
-                "de_image:interfaces": "*"
+                "de_image:interfaces": "*",
+				"de_util:core": ">=0.1.2"
             }
         },
         {
