@@ -390,9 +390,10 @@ MutableImage gaussianBlur(Image _) {
  * Returns:
  * 		The blured image
  */
-MutableImage gaussianBlur(Image _, size_t radius, float weight) {
-	return null;
-}
+/*MutableImage gaussianBlur(Image _, size_t radius, float weight) {
+	Image kernel = gaussianBlurKernel(radius, weight);
+	return convolution2d(_, kernel);
+}*/
 
 /**
  * Creates a kernel for a gaussian blur
@@ -407,6 +408,68 @@ MutableImage gaussianBlur(Image _, size_t radius, float weight) {
  * Returns:
  * 		The kernel
  */
-Image gaussianBlurKernel(size_t radius, float weight) {
-	return null;
-}
+/*Image gaussianBlurKernel(size_t radius, float weight) {
+	import std.math : exp, pow, PI;
+	size_t size = (radius * 2) + 1;
+	MutableImage ret = new MutableImage(size, size);
+	auto _  = ret.rgba;
+
+	size_t sigma = radius + 1;
+	size_t xo = 0;
+	size_t yo = 0;
+	import std.stdio;
+
+	size_t i;
+	foreach(y; 0 .. radius + 1) {
+		foreach(x; 0 .. radius + 1) {
+			float value = cast(float)(
+				(1f/(2f * PI * sigma.pow(2f))) * exp(
+				-((x.pow(2f) + y.pow(2f)) / (2f * sigma.pow(2f)))
+				));
+
+			ushort value2 = cast(ushort)(value * ushort.max);
+			size_t index = i;
+
+			_[index].r = value2;
+			_[index].g = value2;
+			_[index].b = value2;
+			_[index].a = value2;
+
+			size_t x2 = (size-1) - x;
+			size_t y2 = (size-1) - y;
+			if (x < radius) {
+				index = _.indexFromXY(x2, y);
+				_[index].r = value2;
+				_[index].g = value2;
+				_[index].b = value2;
+				_[index].a = value2;
+
+				if (y < radius) {
+					index = _.indexFromXY(x, y2);
+					_[index].r = value2;
+					_[index].g = value2;
+					_[index].b = value2;
+					_[index].a = value2;
+
+					index = _.indexFromXY(x2, y2);
+					_[index].r = value2;
+					_[index].g = value2;
+					_[index].b = value2;
+					_[index].a = value2;
+				}
+			} else if (x == radius) {
+				index = _.indexFromXY(x, y2);
+				_[index].r = value2;
+				_[index].g = value2;
+				_[index].b = value2;
+				_[index].a = value2;
+			}
+
+			i++;
+		}
+
+		i += radius;
+	}
+
+	return ret;
+}*/
