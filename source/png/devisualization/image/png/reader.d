@@ -62,7 +62,9 @@ void parsePng(PngImage _, ubyte[] data) {
                 calculateDataForChunk(index, data,
                                       rawWholeChunk, chunkLength, chunkType, chunkData, crcCodeBytes, crcCodeData);
                 uint crcCode = verifyCRC(chunkType, crcCodeBytes, crcCodeData);
-                debug outputRawChunk(data, index, chunkLength, chunkData, chunkType, crcCode);
+				version(DebugPngChunks) {
+					debug outputRawChunk(data, index, chunkLength, chunkData, chunkType, crcCode);
+				}
 
                 // decide which function to call
                 // it should be unrolled as it is is iterating over a tuple.
@@ -104,7 +106,9 @@ void parsePng(PngImage _, ubyte[] data) {
         // TODO: apply color manipulation such as gAMA
     }
 
-    debug outputPng(_);
+	version(DebugPngChunks) {
+		debug outputPng(_);
+	}
 }
 
 private {
@@ -156,18 +160,20 @@ uint verifyCRC(char[4] chunkType, ubyte[] crcCodeBytes, ubyte[] crcCodeData) {
 }
 
 debug {
-    void outputRawChunk(ubyte[] rawData, size_t index, size_t chunkLength, ubyte[] chunkData, char[4] chunkType, uint crcCode) {
-        import std.stdio;
-        writeln("========" ~ chunkType ~ "========");
+	version(DebugPngChunks) {
+		void outputRawChunk(ubyte[] rawData, size_t index, size_t chunkLength, ubyte[] chunkData, char[4] chunkType, uint crcCode) {
+	        import std.stdio;
+	        writeln("========" ~ chunkType ~ "========");
 
-        writeln("raw: ", rawData[index .. index + chunkLength + 12]);
-        writeln("raw_crc: ", crcCode);
+	        writeln("raw: ", rawData[index .. index + chunkLength + 12]);
+	        writeln("raw_crc: ", crcCode);
 
-        writeln("chunk_length: ", chunkLength);
-        writeln("chunk_data: ", chunkData);
+	        writeln("chunk_length: ", chunkLength);
+	        writeln("chunk_data: ", chunkData);
 
-        writeln("========" ~ chunkType ~ "========");
-    }
+	        writeln("========" ~ chunkType ~ "========");
+	    }
+	}
 
     void outputPng(PngImage _) {
         import std.stdio;
