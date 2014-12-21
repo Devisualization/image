@@ -18,9 +18,6 @@ import devisualization.util.core.linegraph;
  * 		startY 		=	The offset y position (where to start copying from)
  * 		background	=	Empty pixels become this
  * 
- * TODO:
- * 		Actually apply the background
- * 
  * Returns:
  * 		Croped and resized image.
  */
@@ -39,6 +36,10 @@ in {
 	size_t endY = startY + newHeight;
 	if (endY > old.height)
 		endY = old.height;
+
+	foreach(i; 0 .. _.length) {
+		_[i] = background;
+	}
 
 	foreach(y; startY .. endY) {
 		xx = 0;
