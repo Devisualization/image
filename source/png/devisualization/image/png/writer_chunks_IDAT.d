@@ -23,7 +23,7 @@
  */
 module devisualization.image.png.writer_chunks_IDAT;
 import devisualization.image.png.defs;
-import devisualization.image.png.write;
+import devisualization.image.png.writer;
 import devisualization.image;
 //import std.bitmanip : nativeToBigEndian;
 

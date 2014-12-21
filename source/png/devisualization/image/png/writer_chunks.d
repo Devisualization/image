@@ -23,7 +23,7 @@
  */
 module devisualization.image.png.writer_chunks;
 import devisualization.image.png.defs;
-import devisualization.image.png.write;
+import devisualization.image.png.writer;
 import std.bitmanip : nativeToBigEndian;
 
 void write_IHDR(PngImage image, ref ubyte[] ret) {

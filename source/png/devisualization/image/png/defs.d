@@ -147,7 +147,7 @@ class PngImage : Image {
     }
 
     ubyte[] exportFrom() {
-        import devisualization.image.png.write;
+        import devisualization.image.png.writer;
         return writePNG(this);
     }
 

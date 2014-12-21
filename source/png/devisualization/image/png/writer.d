@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-module devisualization.image.png.write;
+module devisualization.image.png.writer;
 import devisualization.image.png.defs;
 import devisualization.image.png.writer_chunks;
 import devisualization.image.png.writer_chunks_IDAT;
