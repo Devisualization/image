@@ -60,17 +60,22 @@ void handle_IDAT_chunk(PngImage _, ubyte[] chunkData) {
             throw new NotAnImageException("Invalid image filter method");
         }
 
-        // TODO: turn IDAT.unfiltered_uncompressed_pixels into something usable
-        foreach(pixel; IDAT.unfiltered_uncompressed_pixels) {
+		allMyPixels.length = IDAT.unfiltered_uncompressed_pixels.length;
+        foreach(i, pixel; IDAT.unfiltered_uncompressed_pixels) {
             if (pixel.used_color) {
                 if (IHDR.bitDepth == PngIHDRBitDepth.BitDepth16) {
-                    allMyPixels ~= new Color_RGBA(pixel.r, pixel.g, pixel.b, pixel.a);
+					allMyPixels[i].r = pixel.r;
+					allMyPixels[i].g = pixel.g;
+					allMyPixels[i].b = pixel.b;
+					allMyPixels[i].a = pixel.a;
                 } else if (IHDR.bitDepth == PngIHDRBitDepth.BitDepth8) {
-                    allMyPixels ~= new Color_RGBA(cast(ushort)(pixel.r * ubyteToUshort),
-                                                  cast(ushort)(pixel.g * ubyteToUshort),
-                                                  cast(ushort)(pixel.b * ubyteToUshort),
-                                                  cast(ushort)(pixel.a * ubyteToUshort));
-                }
+					allMyPixels[i].r = cast(short)(pixel.r * ubyteToUshort);
+					allMyPixels[i].g = cast(ushort)(pixel.g * ubyteToUshort);
+					allMyPixels[i].b = cast(ushort)(pixel.b * ubyteToUshort);
+					allMyPixels[i].a = cast(ushort)(pixel.a * ubyteToUshort);
+				} else {
+					// TODO: what about other bit depths?
+				}
             } else {
                 // TODO: e.g. grayscale, palleted
             }

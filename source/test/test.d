@@ -26,23 +26,35 @@ module test;
 void main() {
     import devisualization.image;
     import devisualization.image.mutable;
+	import devisualization.util.core.linegraph;
 
     import std.stdio;
 
 	writeln("===============\nREAD\n===============");
-	Image img = imageFromFile("test/myfile.png");
+	Image img = imageFromFile("test/sketchpad.png");
 
-    writeln(img.rgba.allPixels);
+    /*writeln(img.rgba.allPixels);
     writeln("width: ", img.width);
     writeln("height: ", img.height);
     foreach(i, pixel; img.rgba) {
         writefln("%d: %s", i, pixel);
     }
+	img = new MutableImage(100, 50);
+	for(size_t i; i < 100 * 50; i++) {
+		img.rgba[i] = Color_RGBA.fromUbyte(255, 0, 0, 255);
+	}*/
+
+	//img = skewHorizontal(img, 25, Color_RGBA.fromUbyte(255, 255, 0, 255));
+	//img = skewVertical(img, -25, Color_RGBA.fromUbyte(255, 255, 0, 255));
+
+	MutableImage img2 = new MutableImage(img);
+	//img2 = img2.rotate(45);
+	img2 = img2.gaussianBlur;
 
 	writeln("===============\nWRITE\n===============");
-	img.exportTo("test_output.png");
+	img2.convertTo("png").exportTo("test_output.png");
 
-	writeln("===============\nREAD - 2\n===============");
+	/*writeln("===============\nREAD - 2\n===============");
 	img = imageFromFile("test_output.png");
 
 	writeln(img.rgba.allPixels);
@@ -63,5 +75,5 @@ void main() {
     writeln("height: ", img.height);
     foreach(i, pixel; img.rgba) {
         writefln("%d: %s", i, pixel);
-    }
+    }*/
 }

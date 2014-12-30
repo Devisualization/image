@@ -25,7 +25,7 @@ module devisualization.image.color;
 
 enum float ubyteToUshort = ushort.max / ubyte.max;
 
-class Color_RGBA {
+struct Color_RGBA {
     ushort r;
     ushort g;
     ushort b;
@@ -51,7 +51,7 @@ class Color_RGBA {
         this.a = a;
     }
 
-    override string toString() {
+    string toString() {
         import std.format : formattedWrite;
         import std.array : appender;
         
@@ -84,7 +84,7 @@ class Color_RGBA {
     }
 
 	static Color_RGBA fromUbyte(ubyte r, ubyte g, ubyte b, ubyte a) {
-		return new Color_RGBA(cast(ushort)(r * ubyteToUshort),
+		return Color_RGBA(cast(ushort)(r * ubyteToUshort),
 		                      cast(ushort)(g * ubyteToUshort),
 		                      cast(ushort)(b * ubyteToUshort),
 		                      cast(ushort)(a * ubyteToUshort));
@@ -116,7 +116,7 @@ Color_RGBA[] colorsFromArray(ubyte[][] data) {
         b *= ubyteToUshort;
         a *= ubyteToUshort;
 
-        ret ~= new Color_RGBA(r, g, b, a);
+        ret ~= Color_RGBA(r, g, b, a);
     }
 
     return ret;

@@ -21,7 +21,7 @@ import devisualization.util.core.linegraph;
  * Returns:
  * 		Croped and resized image.
  */
-MutableImage resizeCrop(Image old, size_t newWidth, size_t newHeight, size_t startX = 0, size_t startY = 0, Color_RGBA background = null)
+MutableImage resizeCrop(Image old, size_t newWidth, size_t newHeight, size_t startX = 0, size_t startY = 0, Color_RGBA* background = null)
 in {
 	assert(startX < old.width);
 	assert(startY < old.height);
@@ -37,8 +37,10 @@ in {
 	if (endY > old.height)
 		endY = old.height;
 
-	foreach(i; 0 .. _.length) {
-		_[i] = background;
+	if (background !is null) {
+		foreach(i; 0 .. _.length) {
+			_[i] = *background;
+		}
 	}
 
 	foreach(y; startY .. endY) {
@@ -372,9 +374,9 @@ MutableImage gaussianBlur(Image _) {
 	static __gshared Image filter;
 	if (filter is null) {
 		filter = new MutableImage(3, 3, 
-           [new Color_RGBA(1/16f, 1/16f, 1/16f, 1/16f), new Color_RGBA(2/16f, 2/16f, 2/16f, 2/16f), new Color_RGBA(1/16f, 1/16f, 1/16f, 1/16f), 
-			new Color_RGBA(2/16f, 2/16f, 2/16f, 2/16f), new Color_RGBA(4/16f, 4/16f, 4/16f, 4/16f), new Color_RGBA(2/16f, 2/16f, 2/16f, 2/16f), 
-			new Color_RGBA(1/16f, 1/16f, 1/16f, 1/16f), new Color_RGBA(2/16f, 2/16f, 2/16f, 2/16f), new Color_RGBA(1/16f, 1/16f, 1/16f, 1/16f)]);
+           [Color_RGBA(1/16f, 1/16f, 1/16f, 1/16f), Color_RGBA(2/16f, 2/16f, 2/16f, 2/16f), Color_RGBA(1/16f, 1/16f, 1/16f, 1/16f), 
+			Color_RGBA(2/16f, 2/16f, 2/16f, 2/16f), Color_RGBA(4/16f, 4/16f, 4/16f, 4/16f), Color_RGBA(2/16f, 2/16f, 2/16f, 2/16f), 
+			Color_RGBA(1/16f, 1/16f, 1/16f, 1/16f), Color_RGBA(2/16f, 2/16f, 2/16f, 2/16f), Color_RGBA(1/16f, 1/16f, 1/16f, 1/16f)]);
 	}
 
 	return convolution2d(_, filter);

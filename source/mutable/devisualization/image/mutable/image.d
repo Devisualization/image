@@ -64,7 +64,6 @@ class MutableImage : Image {
             for(size_t i = allMyPixels.length; i < totalSize; i++) {
                 if (row >= allMyPixels.length)
                     allMyPixels.length++;
-                allMyPixels[row] ~= new Color_RGBA(0, 0, 0, 0);
 
 				if (i % width == width -1)
                     row++;
