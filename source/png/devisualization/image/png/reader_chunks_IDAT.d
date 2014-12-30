@@ -64,20 +64,28 @@ void handle_IDAT_chunk(PngImage _, ubyte[] chunkData) {
         foreach(i, pixel; IDAT.unfiltered_uncompressed_pixels) {
             if (pixel.used_color) {
                 if (IHDR.bitDepth == PngIHDRBitDepth.BitDepth16) {
-					allMyPixels[i].r = pixel.r;
-					allMyPixels[i].g = pixel.g;
-					allMyPixels[i].b = pixel.b;
-					allMyPixels[i].a = pixel.a;
+					allMyPixels[i] = Color_RGBA(pixel.r, pixel.g, pixel.b, pixel.a);
                 } else if (IHDR.bitDepth == PngIHDRBitDepth.BitDepth8) {
-					allMyPixels[i].r = cast(short)(pixel.r * ubyteToUshort);
-					allMyPixels[i].g = cast(ushort)(pixel.g * ubyteToUshort);
-					allMyPixels[i].b = cast(ushort)(pixel.b * ubyteToUshort);
-					allMyPixels[i].a = cast(ushort)(pixel.a * ubyteToUshort);
+					allMyPixels[i] = Color_RGBA(cast(ushort)(pixel.r * ubyteToUshort),
+					                              cast(ushort)(pixel.g * ubyteToUshort),
+					                              cast(ushort)(pixel.b * ubyteToUshort),
+					                              cast(ushort)(pixel.a * ubyteToUshort));
 				} else {
 					// TODO: what about other bit depths?
+					allMyPixels[i] = Color_RGBA(0, 0, 0, 0);
 				}
             } else {
-                // TODO: e.g. grayscale, palleted
+				if (IHDR.bitDepth == PngIHDRBitDepth.BitDepth16) {
+					allMyPixels[i] = Color_RGBA(pixel.value, pixel.value, pixel.value, pixel.a);
+				} else if (IHDR.bitDepth == PngIHDRBitDepth.BitDepth8) {
+					allMyPixels[i] = Color_RGBA(cast(ushort)(pixel.value * ubyteToUshort),
+					                            cast(ushort)(pixel.value * ubyteToUshort),
+					                            cast(ushort)(pixel.value * ubyteToUshort),
+					                            cast(ushort)(pixel.a * ubyteToUshort));
+				} else {
+					// TODO: what about other bit depths?
+					allMyPixels[i] = Color_RGBA(0, 0, 0, 0);
+				}
             }
         }
     }
@@ -88,14 +96,9 @@ out ubyte[] uncompressed, out size_t expectedSize, out size_t colorSize) {
     import std.zlib : uncompress;
 
     with(_) {
-        if (IHDR.filterMethod == PngIHDRFilter.Adaptive) {
-            // add one per scan line
-            expectedSize = IHDR.height;
-        }
-        
-        if (IHDR.colorType == PngIHDRColorType.Palette) {
+		if (IHDR.colorType == PngIHDRColorType.Palette || IHDR.colorType == PngIHDRColorType.Grayscale) {
             colorSize = 1;
-        } else if (IHDR.colorType == PngIHDRColorType.PalletteWithColorUsed) {
+        } else if (IHDR.colorType == PngIHDRColorType.PalletteWithColorUsed || IHDR.colorType == PngIHDRColorType.AlphaChannelUsed) {
             colorSize = 2;
         } else if (IHDR.colorType == PngIHDRColorType.ColorUsed) {
             colorSize = 3;
@@ -119,8 +122,15 @@ out ubyte[] uncompressed, out size_t expectedSize, out size_t colorSize) {
             default:
                 throw new NotAnImageException("Unknown bit depth");
         }
-    }
 
+		expectedSize *= IHDR.height * IHDR.width;
+
+		if (IHDR.filterMethod == PngIHDRFilter.Adaptive) {
+			// add one per scan line
+			expectedSize += IHDR.height;
+		}
+
+	}
     uncompressed = cast(ubyte[])uncompress(chunkData, expectedSize);
 }
 
@@ -164,7 +174,7 @@ IDAT_Chunk_Pixel[] adaptivePixelGrabber(PngImage _, ubyte[][] data, ubyte[] filt
             else
                 lastPixelData.length = pixelData.length;
 
-            for(size_t i = 0; i < pixelData.length -1; i += colorSize) {
+            for(size_t i = 0; i < pixelData.length; i += colorSize) {
                 ubyte[] thePixel = pixelData.dup;
 
                 // unfilter

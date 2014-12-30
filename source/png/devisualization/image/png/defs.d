@@ -171,7 +171,7 @@ enum PngTextKeywords : string {
 }
 
 enum PngIHDRColorType : ubyte {
-    None = 0,                                               // valid (0)
+    Grayscale = 0,                                               // valid (0)
     
     Palette = 1 << 0,                                       // not valid
     ColorUsed = 1 << 1,                                     // valid (2) rgb

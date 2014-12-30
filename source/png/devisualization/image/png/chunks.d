@@ -212,17 +212,17 @@ class IDAT_Chunk_Pixel {
 
 	ubyte[] exportValues(PngIHDRColorType type, bool multibyte) {
 		import std.bitmanip : nativeToBigEndian;
-		if (type == PngIHDRColorType.Palette) {
+		if (type == PngIHDRColorType.Palette || type == PngIHDRColorType.Grayscale) {
 			if (multibyte) {
 				return nativeToBigEndian(value);
 			} else {
-				return [nativeToBigEndian(value)[1]];
+				return [cast(ubyte)(value)];
 			}
-		} else if (type == PngIHDRColorType.PalletteWithColorUsed) {
+		} else if (type == PngIHDRColorType.PalletteWithColorUsed || type == PngIHDRColorType.AlphaChannelUsed) {
 			if (multibyte) {
 				return nativeToBigEndian(value) ~ nativeToBigEndian(a);
 			} else {
-				return [nativeToBigEndian(value)[1], nativeToBigEndian(a)[1]];
+				return [cast(ubyte)value, cast(ubyte)a];
 			}
 		} else if (type == PngIHDRColorType.ColorUsed) {
 			if (multibyte) {
