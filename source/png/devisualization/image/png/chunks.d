@@ -151,6 +151,7 @@ class IDAT_Chunk_Pixel {
         if (multibyte) {
             if (data.length == 2) {
                 value = bigEndianToNative!ushort(cast(ubyte[2])data[0 .. 2]);
+				a = ushort.max;
             } else if (data.length == 4) {
                 value = bigEndianToNative!ushort(cast(ubyte[2])data[0 .. 2]);
                 a = bigEndianToNative!ushort(cast(ubyte[2])data[2 .. 4]);
@@ -169,6 +170,7 @@ class IDAT_Chunk_Pixel {
         } else {
             if (data.length == 1) {
                 value = data[0];
+				a = ushort.max;
             } else if (data.length == 2) {
                 value = data[0];
                 a = data[1];

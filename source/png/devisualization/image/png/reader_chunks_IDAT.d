@@ -167,84 +167,111 @@ IDAT_Chunk_Pixel[] adaptivePixelGrabber(PngImage _, ubyte[][] data, ubyte[] filt
     IDAT_Chunk_Pixel[] pixels;
 
     with(_) {
-        foreach(pixel, pixelData; data) {
-            ubyte[] lastPixelData;
-            if (pixel > 0)
-                lastPixelData = data[pixel - 1];
-            else
-                lastPixelData.length = pixelData.length;
+		ubyte[][] lastPixelData;
 
-            for(size_t i = 0; i < pixelData.length; i += colorSize) {
-                ubyte[] thePixel = pixelData.dup;
+		foreach(pixel, pixelData; data) {
+            ubyte[] thePixel = pixelData.dup;
+			size_t pI = pixel % IHDR.width;
 
-                // unfilter
-                switch(filters[scanLine]) {
-                    case 1: // sub
-                        // Sub(x) + Raw(x-bpp)
-                        
-                        foreach(j; 0 .. colorSize) {
-                            thePixel[j] = pixelData[j];
-                        }
-                        
-                        foreach(j; colorSize .. pixelData.length) {
-                            thePixel[j] = cast(ubyte)(pixelData[j] + pixelData[j - colorSize]);
-                        }
-                        break;
-                        
-                    case 2: // up
-                        // Up(x) + Prior(x)
-                        
-                        if (i > 0) {
-                            thePixel[0] = pixelData[0];
-                            foreach(j; 1 .. pixelData.length) {
-                                thePixel[j] = cast(ubyte)(pixelData[j] + lastPixelData[j]);
-                            }
-                        } else {
-                            thePixel = pixelData;
-                        }
-                        break;
-                        
-                    case 3: // average
-                        import std.math : floor;
-                        // Average(x) + floor((Raw(x-bpp)+Prior(x))/2)
-                        
-                        foreach(j; 0 .. colorSize) {
-                            ubyte prior = i > 0 ? lastPixelData[j - 1] : 0;
-                            
-                            thePixel[j] = cast(ubyte)(pixelData[j] + cast(ubyte)floor(cast(real)(0 + prior) / 2));
-                        }
-                        
-                        foreach(j; colorSize .. pixelData.length) {
-                            thePixel[j] = cast(ubyte)(pixelData[j] + cast(ubyte)floor(cast(real)(pixelData[j - colorSize] + lastPixelData[j - 1]) / 2));
-                        }
-                        break;
-                        
-                    case 4: // paeth
-                        //  Paeth(x) + PaethPredictor(Raw(x-bpp), Prior(x), Prior(x-bpp))
-                        
-                        foreach(j; 0 .. colorSize) {
-                            ubyte priorAbove = i > 0 ? lastPixelData[j] : 0;
-                            ubyte priorAboveLeft = i > 0 ? lastPixelData[j - colorSize] : 0;
-                            
-                            thePixel[j] = cast(ubyte)(pixelData[j] + PaethPredictor(0, priorAbove, priorAboveLeft));
-                        }
-                        
-                        foreach(j; colorSize .. pixelData.length) {
-                            thePixel[j] = cast(ubyte)(pixelData[j] + PaethPredictor(pixelData[j - colorSize], lastPixelData[j], lastPixelData[j - colorSize]));
-                        }
-                        
-                        break;
-                        
-                    default:
-                    case 0: // none
-                        break;
-                }
+            // unfilter
+            switch(filters[scanLine]) {
+                case 1: // sub
+                    // Sub(x) + Raw(x-bpp)
+                    
+					if (pI > 0) {
+						foreach(j; 0 .. colorSize) {
+							ubyte rawSub = lastPixelData[pixel-1][j];
+                        	thePixel[j] = cast(ubyte)(pixelData[j] + rawSub);
+                    	}
+					} else {
+						// no changes needed
+					}
 
-                pixels ~= new IDAT_Chunk_Pixel(thePixel, IHDR.bitDepth == PngIHDRBitDepth.BitDepth16);
+                    break;
+                    
+                case 2: // up
+                    // Up(x) + Prior(x)
+                    
+					if (scanLine > 0) {
+                        foreach(j; 0 .. pixelData.length) {
+							ubyte prior = lastPixelData[(scanLine - 1) * _.width + pI][j];
+							thePixel[j] = cast(ubyte)(pixelData[j] + prior);
+                        }
+                    } else {
+						// no changes needed
+                    }
+                    break;
+                    
+                case 3: // average
+                    import std.math : floor;
+                    // Average(x) + floor((Raw(x-bpp)+Prior(x))/2)
+                    
+					if (scanLine > 0 && pI > 0) {
+						foreach(j; 0 .. colorSize) {
+							ubyte prior = lastPixelData[(scanLine - 1) * _.width + pI][j];
+							ubyte rawSub = lastPixelData[pixel-1][j];
+							thePixel[j] = cast(ubyte)(pixelData[j] + floor(cast(real)(rawSub + prior) / 2f));
+	                    }
+					} else if (scanLine > 0 && pI == 0) {
+						foreach(j; 0 .. colorSize) {
+							ubyte prior = lastPixelData[(scanLine - 1) * _.width + pI][j];
+							ubyte rawSub = 0;
+							thePixel[j] = cast(ubyte)(pixelData[j] + floor(cast(real)(rawSub + prior) / 2f));
+						}
+					} else if (scanLine == 0 && pI > 0) {
+						foreach(j; 0 .. colorSize) {
+							ubyte prior = 0;
+							ubyte rawSub = lastPixelData[pixel-1][j];
+							thePixel[j] = cast(ubyte)(pixelData[j] + floor(cast(real)(rawSub + prior) / 2f));
+						}
+					} else {
+						// no changes needed
+					}
+					break;
+                    
+                case 4: // paeth
+                    //  Paeth(x) + PaethPredictor(Raw(x-bpp), Prior(x), Prior(x-bpp))
+                    
+					if (scanLine > 0 && pI > 0) {
+						foreach(j; 0 .. colorSize) {
+							ubyte prior = lastPixelData[(scanLine - 1) * _.width + pI][j];
+							ubyte rawSub = lastPixelData[pixel-1][j];
+							ubyte priorRawSub = lastPixelData[(scanLine - 1) * _.width + (pI-1)][j];
 
-                if (i % IHDR.width == IHDR.width-1) {
-                    scanLine++;
-                }
+							thePixel[j] = cast(ubyte)(pixelData[j] + PaethPredictor(rawSub, prior, priorRawSub));
+	                    }
+					} else if (scanLine > 0 && pI == 0) {
+						foreach(j; 0 .. colorSize) {
+							ubyte prior = lastPixelData[(scanLine - 1) * _.width + pI][j];
+							ubyte rawSub = 0;
+							ubyte priorRawSub = 0;
+
+							thePixel[j] = cast(ubyte)(pixelData[j] + PaethPredictor(rawSub, prior, priorRawSub));
+						}
+					} else if (scanLine == 0 && pI > 0) {
+						foreach(j; 0 .. colorSize) {
+							ubyte prior = 0;
+							ubyte rawSub = lastPixelData[pixel-1][j];
+							ubyte priorRawSub = 0;
+
+							thePixel[j] = cast(ubyte)(pixelData[j] + PaethPredictor(rawSub, prior, priorRawSub));
+						}
+					} else {
+						// no changes needed
+					}
+                    
+                    break;
+                    
+                default:
+                case 0: // none
+                    break;
+            }
+
+			lastPixelData ~= thePixel;
+            pixels ~= new IDAT_Chunk_Pixel(thePixel, IHDR.bitDepth == PngIHDRBitDepth.BitDepth16);
+
+            if (pixel % IHDR.width == IHDR.width-1) {
+                scanLine++;
             }
         }
     }
