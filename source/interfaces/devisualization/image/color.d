@@ -81,6 +81,26 @@ struct Color_RGBA {
         ubyte[4] ubytes() {
             return [r_ubyte, g_ubyte, b_ubyte, a_ubyte];
         }
+
+		float r_float() {
+			return r / ushort.max;
+		}
+
+		float g_float() {
+			return g / ushort.max;
+		}
+
+		float b_float() {
+			return b / ushort.max;
+		}
+
+		float a_float() {
+			return a / ushort.max;
+		}
+
+		float[4] floats() {
+			return [r_float, g_float, b_float, a_float];
+		}
     }
 
 	static Color_RGBA fromUbyte(ubyte r, ubyte g, ubyte b, ubyte a) {
