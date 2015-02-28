@@ -58,17 +58,18 @@ class MutableImage : Image {
             }
         }
 
-        if (pixels.length < totalSize) {
-            // append
-            row = allMyPixels.length / width;
-            for(size_t i = allMyPixels.length; i < totalSize; i++) {
-                if (row >= allMyPixels.length)
-                    allMyPixels.length++;
-
-				if (i % width == width -1)
-                    row++;
-            }
-        }
+		foreach(i; 0 .. height) {
+			if (allMyPixels.length < i + 1)
+				allMyPixels ~= [];
+		
+			Color_RGBA[] toadd;
+			toadd.length = width - (allMyPixels.length < i + 1 ? 0 : allMyPixels[i].length);
+			
+			if (allMyPixels.length < i + 1)
+				allMyPixels ~= toadd;
+			else
+				allMyPixels[i] ~= toadd;
+		}
     }
 
     @property {
