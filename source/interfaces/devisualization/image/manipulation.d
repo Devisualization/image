@@ -47,19 +47,27 @@ void applyByY(Image image, void delegate(Color_RGBA pixel, size_t x, size_t y) d
  * 		_	=	The image to flip
  */
 @property void flipVertical(Image _) {
-	import std.math : floor;
 	auto __ = _.rgba;
-	size_t div2Height = cast(size_t)floor(_.height / 2f);
+	size_t width = _.width;
+	size_t height = _.height;
 	
-	foreach(x; 0 .. _.width) {
+	size_t div2Height = height / 2;
+	
+	size_t offset;
+	foreach(x; 0 .. width) {
+		size_t i = offset;
+		size_t i2 = i + (height - 1);
+		
 		foreach(y; 0 .. div2Height) {
-			size_t i = __.indexFromXY(x, y); 
-			size_t i2 = __.indexFromXY(x, _.height - (y + 1));
 			Color_RGBA to = __[i2];
-			
 			__[i2] = __[i];
 			__[i] = to;
+			
+			i++;
+			i2--;
 		}
+		
+		offset += width;
 	}
 }
 
@@ -70,19 +78,27 @@ void applyByY(Image image, void delegate(Color_RGBA pixel, size_t x, size_t y) d
  * 		_	=	The image to flip
  */
 @property void flipHorizontal(Image _) {
-	import std.math : floor;
 	auto __ = _.rgba;
-	size_t div2Width = cast(size_t)floor(_.width / 2f);
-	
-	foreach(x; 0 .. div2Width) {
-		foreach(y; 0 .. _.height) {
-			size_t i = __.indexFromXY(x, y); 
-			size_t i2 = __.indexFromXY(_.width - (x + 1), y);
+	size_t width = _.width;
+	size_t height = _.height;
+
+	size_t div2Width = width / 2;
+
+	size_t offset;
+	foreach(y; 0 .. height) {
+		size_t i = offset;
+		size_t i2 = i + (width - 1);
+
+		foreach(x; 0 .. div2Width) {
 			Color_RGBA to = __[i2];
-			
 			__[i2] = __[i];
 			__[i] = to;
+
+			i++;
+			i2--;
 		}
+
+		offset += width;
 	}
 }
 
