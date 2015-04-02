@@ -136,9 +136,8 @@ void calculateDataForChunk(size_t index, ubyte[] data,
 out ubyte[] rawWholeChunk, out uint chunkLength, out char[4] chunkType, out ubyte[] chunkData, out ubyte[] crcCodeBytes, out ubyte[] crcCodeData)  {
     import std.bitmanip : bigEndianToNative;
 
-    ubyte[4] d1 = data[index .. index + 4];
-    chunkLength = bigEndianToNative!uint(d1);
-    chunkType = cast(char[4])d1;
+	chunkLength = bigEndianToNative!uint(*cast(ubyte[4]*)data[index .. index + 4].ptr);
+	chunkType = *cast(char[4]*)data[index + 4 .. index + 8].ptr;
     chunkData = data[index + 4 + 4 .. index + 4 + 4 + chunkLength];
     
     crcCodeBytes = data[index + chunkLength + 8 .. index + chunkLength + 12];
