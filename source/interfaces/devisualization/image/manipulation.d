@@ -85,8 +85,8 @@ void applyByY(Image image, void delegate(Color_RGBA pixel, size_t x, size_t y) d
 			}
 		}
 		
-		foreach(y, offset; parallel(TR())) {
-			size_t i = offset;
+		foreach(y, yv; parallel(TR())) {
+			size_t i = y * height;
 			size_t i2 = i + (width - 1);
 			
 			foreach(x; 0 .. div2Height) {
@@ -99,10 +99,8 @@ void applyByY(Image image, void delegate(Color_RGBA pixel, size_t x, size_t y) d
 			}
 		}
 	} else {
-		size_t offset;
-
 		foreach(y, yv; parallel(STATICBUFFER[0 .. width])) {
-			size_t i = offset;
+			size_t i = y * height;
 			size_t i2 = i + (width - 1);
 			
 			foreach(x; 0 .. div2Height) {
@@ -113,8 +111,6 @@ void applyByY(Image image, void delegate(Color_RGBA pixel, size_t x, size_t y) d
 				i++;
 				i2--;
 			}
-
-			offset += height;
 		}
 	}
 }
@@ -154,8 +150,8 @@ void applyByY(Image image, void delegate(Color_RGBA pixel, size_t x, size_t y) d
 			}
 		}
 
-		foreach(y, offset; parallel(TR())) {
-			size_t i = offset;
+		foreach(y, yv; parallel(TR())) {
+			size_t i = y * width;
 			size_t i2 = i + (width - 1);
 			
 			foreach(x; 0 .. div2Width) {
@@ -168,10 +164,8 @@ void applyByY(Image image, void delegate(Color_RGBA pixel, size_t x, size_t y) d
 			}
 		}
 	} else {
-		size_t offset;
-
 		foreach(y, yv; parallel(STATICBUFFER[0 .. height])) {
-			size_t i = offset;
+			size_t i = y * width;
 			size_t i2 = i + (width - 1);
 			
 			foreach(x; 0 .. div2Width) {
@@ -182,8 +176,6 @@ void applyByY(Image image, void delegate(Color_RGBA pixel, size_t x, size_t y) d
 				i++;
 				i2--;
 			}
-
-			offset += width;
 		}
 	}
 }
