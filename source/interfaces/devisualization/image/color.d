@@ -131,10 +131,10 @@ Color_RGBA[] colorsFromArray(ubyte[][] data) {
         ushort b = datem.length > 2 ? datem[2] : 0;
         ushort a = datem.length > 3 ? datem[3] : 255;
 
-        r *= ubyteToUshort;
-        g *= ubyteToUshort;
-        b *= ubyteToUshort;
-        a *= ubyteToUshort;
+        r = cast(ushort)(cast(float)r * ubyteToUshort);
+        g = cast(ushort)(cast(float)g * ubyteToUshort);
+        b = cast(ushort)(cast(float)b * ubyteToUshort);
+        a = cast(ushort)(cast(float)a * ubyteToUshort);
 
         ret ~= Color_RGBA(r, g, b, a);
     }
