@@ -216,7 +216,7 @@ class IDAT_Chunk_Pixel {
 		import std.bitmanip : nativeToBigEndian;
 		if (type == PngIHDRColorType.Palette || type == PngIHDRColorType.Grayscale) {
 			if (multibyte) {
-				return nativeToBigEndian(value);
+				return nativeToBigEndian(value).dup;
 			} else {
 				return [cast(ubyte)(value)];
 			}
