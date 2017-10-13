@@ -1,53 +1,24 @@
 {
 	"name": "de_image",
 	"description": "Image loading and exporting Devisualization",
-	"copyright": "Copyright © 2014, Richard Andrew Cattermole, Devisualization",
+	"copyright": "Copyright © 2014-2017, Richard Andrew Cattermole, Devisualization",
 	"authors": ["Richard Andrew Cattermole"],
 	"homepage": "https://github.com/Devisualization/image",
-	"license": "MIT",
-	"targetType": "none",
-	"sourcePaths": [],
+	"license": "BSL",
+	"dependencies": {
+		"de_image:base": "*"
+	},
+	"sourceFiles": [],
+	"importPaths": [],
 	"subPackages": [
 		{
-			"name": "interfaces",
+			"name": "base",
 			"targetType": "library",
-			"sourcePaths": ["source/interfaces"],
-			"importPaths": ["source/interfaces"]
-		},
-		{
-			"name": "png",
-			"targetType": "library",
-			"sourcePaths": ["source/png"],
-			"importPaths": ["source/png"],
+			"sourcePaths": ["source/base"],
+			"importPaths": ["source/base"],
 			"dependencies": {
-				"de_image:interfaces": "*"
-			}
-		},
-		{
-			"name": "mutable",
-			"targetType": "library",
-			"sourcePaths": ["source/mutable"],
-			"importPaths": ["source/mutable"],
-			"dependencies": {
-				"de_image:interfaces": "*",
-				"de_util:core": ">=0.0.7"
-			}
-		},
-		{
-			"name": "common",
-			"targetType": "library",
-			"sourcePaths": [],
-			"dependencies": {
-				"de_image:png": "*",
-				"de_image:mutable": "*"
-			}
-		},
-		{
-			"name": "test",
-			"targetType": "executable",
-			"dependencies": {
-				"de_image:png": "*",
-				"de_image:mutable": "*"
+				"color": "~>0.0.5",
+				"de_util:core": "~>0.1.1"
 			}
 		}
 	]
