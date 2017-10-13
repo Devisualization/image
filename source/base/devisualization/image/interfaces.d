@@ -561,16 +561,23 @@ version(unittest) package {
         }
 
         @property {
-            size_t width() @nogc nothrow @safe{ return width_; }
-            size_t height() @nogc nothrow @safe { return height_; }
+			size_t width() @nogc nothrow @safe{ return width_; }
+			size_t width() @nogc nothrow @safe shared{ return width_; }
+			size_t height() @nogc nothrow @safe { return height_; }
+			size_t height() @nogc nothrow @safe shared { return height_; }
         }
 
-        Color getPixel(size_t x, size_t y) @nogc @safe { return data[x][y]; }
-        void setPixel(size_t x, size_t y, Color value) @nogc  @safe { data[x][y] = value; }
-        Color opIndex(size_t x, size_t y) @nogc  @safe{ return getPixel(x, y); }
-        void opIndexAssign(Color value, size_t x, size_t y) @nogc @safe { setPixel(x, y, value); }
+		Color getPixel(size_t x, size_t y) @nogc @safe { return data[x][y]; }
+		Color getPixel(size_t x, size_t y) @nogc @safe shared { return data[x][y]; }
+		void setPixel(size_t x, size_t y, Color value) @nogc @safe { data[x][y] = value; }
+		void setPixel(size_t x, size_t y, Color value) @nogc shared @safe { data[x][y] = value; }
+		Color opIndex(size_t x, size_t y) @nogc @safe { return getPixel(x, y); }
+		Color opIndex(size_t x, size_t y) @nogc @safe shared { return getPixel(x, y); }
+		void opIndexAssign(Color value, size_t x, size_t y) @nogc @safe { setPixel(x, y, value); }
+		void opIndexAssign(Color value, size_t x, size_t y) @nogc @safe shared { setPixel(x, y, value); }
 
-        bool resize(size_t, size_t) @nogc @safe { return false; }
+		bool resize(size_t, size_t) @nogc @safe { return false; }
+		bool resize(size_t, size_t) @nogc @safe shared { return false; }
     }
 }
 

@@ -2176,7 +2176,7 @@ managed!(PNGFileFormat!HeadersOnly) loadPNGHeaders(IR)(IR input, IAllocator allo
  *      A PNG file, loaded as an image along with its headers. Using specified image storage type.
  */
 managed!(PNGFileFormat!Color) loadPNG(Color, ImageImpl=ImageStorageHorizontal!Color, IR)(IR input, IAllocator allocator = theAllocator()) @trusted if (isInputRange!IR && is(ElementType!IR == ubyte) && isImage!ImageImpl) {
-	managed!(PNGFileFormat!Color) ret = managed!(PNGFileFormat!Color)(managers(ReferenceCountedManager()), tuple(allocator), allocator);
+	managed!(PNGFileFormat!Color) ret = managed!(PNGFileFormat!Color)(managers(), tuple(allocator), allocator);
 
     ret.theImageAllocator = &ret.allocateTheImage!ImageImpl;
     ret.performInput(input);
@@ -2189,9 +2189,9 @@ unittest {
     import std.experimental.color;
     
     import std.file : read;
-    auto input = cast(ubyte[])read("testAssets/test.png");
+	auto input = cast(ubyte[])x"89504E470D0A1A0A0000000D4948445200000002000000020802000000FDD49A73000000097048597300000B1300000B1301009A9C180000000774494D4507DF07150E122E54E72FF10000001974455874436F6D6D656E74004372656174656420776974682047494D5057810E17000000114944415408D763F8CFC0C0F09F014A000019F402FEE23BE1150000000049454E44AE426082";
     
-    PNGFileFormat!RGB8 image = loadPNG!RGB8(input);
+    managed!(PNGFileFormat!RGB8) image = loadPNG!RGB8(input);
 }
 
 /**
@@ -2203,11 +2203,11 @@ unittest {
  * Returns:
  *      A compatible PNG image
  */
-managed!(PNGFileFormat!Color) asPNG(From, Color = ImageColor!From, ImageImpl=ImageStorageHorizontal!Color)(From from, IAllocator allocator = theAllocator()) @safe
+managed!(PNGFileFormat!Color) asPNG(From, Color = ImageColor!From, ImageImpl=ImageStorageHorizontal!Color)(From from, IAllocator allocator = theAllocator())
 if (isImage!From && !is(From == struct)) {
     import devisualization.image.primitives : copyTo;
     
-    managed!(PNGFileFormat!Color) ret = managed!(PNGFileFormat!Color)(managers(ReferenceCountedManager()), tuple(allocator), allocator);
+    managed!(PNGFileFormat!Color) ret = managed!(PNGFileFormat!Color)(managers(), tuple(allocator), allocator);
     ret.allocateTheImage!ImageImpl(from.width, from.height);
     
     from.copyTo(ret.value);
@@ -2226,10 +2226,10 @@ unittest {
     import std.experimental.color;
     
     import std.file : read;
-    auto input = cast(ubyte[])read("testAssets/test.png");
-    
+	auto input = cast(ubyte[])x"89504E470D0A1A0A0000000D4948445200000002000000020802000000FDD49A73000000097048597300000B1300000B1301009A9C180000000774494D4507DF07150E122E54E72FF10000001974455874436F6D6D656E74004372656174656420776974682047494D5057810E17000000114944415408D763F8CFC0C0F09F014A000019F402FEE23BE1150000000049454E44AE426082";
+	
     ImageStorageHorizontal!RGB8 image = ImageStorageHorizontal!RGB8(2, 2);
-    PNGFileFormat!RGB8 image2 = asPNG(&image);
+    managed!(PNGFileFormat!RGB8) image2 = asPNG(&image);
     
     // modify some fields
     

@@ -21,6 +21,14 @@
 				"de_util:core": "~>0.1.1",
 				"emsi_containers": "~>0.5.3"
 			}
-		}
+		},
+		{
+            "name": "tests",
+            "sourcePaths": ["tests"],
+            "targetType": "executable",
+            "dependencies": {
+                "de_image": "*"
+            }
+        }
 	]
 }
