@@ -61,9 +61,9 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
     iCCP_Chunk* iCCP;
     
     /// tEXt values are really latin-1 but treated as UTF-8 in D code, may originate from iEXt
-	HashMap!(PngTextKeywords, string, IAllocator) tEXt;
+	HashMap!(PngTextKeywords, string, IAllocator)* tEXt;
     /// zEXt values are really latin-1 but treated as UTF-8 in D code, may originate from iEXt
-	HashMap!(PngTextKeywords, string, IAllocator) zEXt;
+	HashMap!(PngTextKeywords, string, IAllocator)* zEXt;
     
     ///
     bKGD_Chunk* bKGD;
@@ -75,9 +75,9 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
     sBIT_Chunk* sBIT;
     
     ///
-	DynamicArray!(sPLT_Chunk, IAllocator) sPLT;
+	DynamicArray!(sPLT_Chunk, IAllocator)* sPLT;
     ///
-	DynamicArray!(ushort, IAllocator) hIST;
+	DynamicArray!(ushort, IAllocator)* hIST;
 
     ///
     DateTime* tIME;
@@ -118,14 +118,14 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
         
         if (tEXt.keys.length > 0) {
 			addText("\t\ttEXt(\n");
-			foreach(const(PngTextKeywords) k, string v; tEXt) {
+			foreach(const(PngTextKeywords) k, string v; *tEXt) {
 				addText("\t\t\t[", k, "]: {", v, "}\n");
 			}
 			addText("\t\t)\n");
 		}
         if (zEXt.keys.length > 0) {
 			addText("\t\tzEXt(\n");
-			foreach(const(PngTextKeywords) k, string v; zEXt) {
+			foreach(const(PngTextKeywords) k, string v; *zEXt) {
 				addText("\t\t\t[", k, "]: {", v, "}\n");
 			}
 			addText("\t\t)\n");
@@ -153,9 +153,9 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
             addText("\t\t", (*tIME).text, ",\n");
         
         if (sPLT.length > 0)
-            addText("\t\t", sPLT[].text, ",\n");
+            addText("\t\t", (*sPLT)[].text, ",\n");
         if (hIST.length > 0)
-            addText("\t\t", hIST[].text, ",\n");
+            addText("\t\t", (*hIST)[].text, ",\n");
         
         addText("\t]\n");
         static if (!is(Color == HeadersOnly)) {
@@ -191,13 +191,15 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
     
 	this(IAllocator allocator) {
 		this.alloc = allocator;
-		tEXt = HashMap!(PngTextKeywords, string, IAllocator)(allocator);
-		zEXt = HashMap!(PngTextKeywords, string, IAllocator)(allocator);
-		sPLT = DynamicArray!(sPLT_Chunk, IAllocator)(allocator);
-		hIST = DynamicArray!(ushort, IAllocator)(allocator);
+		tEXt = allocator.make!(HashMap!(PngTextKeywords, string, IAllocator))(allocator);
+		zEXt = allocator.make!(HashMap!(PngTextKeywords, string, IAllocator))(allocator);
+		sPLT = allocator.make!(DynamicArray!(sPLT_Chunk, IAllocator))(allocator);
+		hIST = allocator.make!(DynamicArray!(ushort, IAllocator))(allocator);
 	}
 
 	~this() {
+		if (allocator is null) return;
+		
 		if (PLTE !is null)
 			allocator.dispose(PLTE);
 		if (tRNS !is null)
@@ -218,11 +220,13 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
 			allocator.dispose(sBIT);
 		if (tIME !is null)
 			allocator.dispose(tIME);
-		
+
 		static if (!is(Color == HeadersOnly)) {
 			if (IDAT !is null) {
 				allocator.dispose(IDAT.data);
 				allocator.dispose(IDAT);
+			}
+			if (value !is null) {
 				allocator.dispose(value);
 			}
 		}
@@ -646,7 +650,7 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
             char[] buffer2 = allocator.makeArray!char(buffer.length);
             buffer2[] = cast(char[])buffer[];
             
-            tEXt[cast(PngTextKeywords)keyword2] = cast(string)buffer2;
+            (*tEXt)[cast(PngTextKeywords)keyword2] = cast(string)buffer2;
         }
         
         void readChunk_zEXt(ubyte[] chunkData) @trusted {
@@ -684,7 +688,7 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
             char[] buffer2 = allocator.makeArray!char(buffer.length - 1);
             buffer2[] = cast(char[])buffer[1 .. $];
             
-            tEXt[cast(PngTextKeywords)keyword2] = cast(string)buffer2;
+            (*zEXt)[cast(PngTextKeywords)keyword2] = cast(string)buffer2;
         }
         
         void readChunk_iEXt(ubyte[] chunkData) @trusted {
@@ -755,9 +759,9 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
             buffer3 = cast(char[])buffer[];
             
             if (useCompression)
-                zEXt[cast(PngTextKeywords)keyword2] = cast(string)buffer3;
+                (*zEXt)[cast(PngTextKeywords)keyword2] = cast(string)buffer3;
             else
-                tEXt[cast(PngTextKeywords)keyword2] = cast(string)buffer3;
+                (*tEXt)[cast(PngTextKeywords)keyword2] = cast(string)buffer3;
         }
         
         void readChunk_bKGD(ubyte[] chunkData) @trusted {
@@ -915,7 +919,7 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
                 throw allocator.make!ImageNotLoadableException("sPLT chunk must have a bit depth of either 8 or 16");
             }
             
-            sPLT ~= chunk;
+            *sPLT ~= chunk;
         }
         
         void readChunk_hIST(ubyte[] chunkData) @trusted {
@@ -927,7 +931,7 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
             foreach(i; hIST.length - count .. hIST.length) {
                 ubyte[2] values;
                 values[] = chunkData[ci .. ci + 2];
-                hIST ~= bigEndianToNative!ushort(values);
+                *hIST ~= bigEndianToNative!ushort(values);
                 
                 ci += 2;
             }
@@ -1552,7 +1556,7 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
         }
         
         void writeChunk_tEXt(ubyte[] buffer, void delegate(char[4], ubyte[]) write) @trusted {
-            foreach(const(PngTextKeywords) keyword, string value; tEXt) {
+            foreach(const(PngTextKeywords) keyword, string value; *tEXt) {
                 ubyte[] towrite = buffer[0 .. keyword.length + 1];
                 
                 towrite[0 .. $-1] = cast(ubyte[])keyword[];
@@ -1568,7 +1572,7 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
         void writeChunk_zEXt(ubyte[] buffer, void delegate(char[4], ubyte[]) write) @trusted {
             import std.zlib : compress;
             
-			foreach(const(PngTextKeywords) keyword, string value; zEXt) {
+			foreach(const(PngTextKeywords) keyword, string value; *zEXt) {
                 ubyte[] towrite = buffer[0 .. keyword.length + 2];
                 
                 towrite[0 .. $-2] = cast(ubyte[])keyword[];
@@ -1668,7 +1672,7 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
         void writeChunk_sPLT(ubyte[] buffer, void delegate(char[4], ubyte[]) write) @trusted {
             ubyte[] towrite;
             
-            foreach(chunk; sPLT) {
+            foreach(chunk; *sPLT) {
                 towrite = buffer[towrite.length .. towrite.length + chunk.paletteName.length + 2];
                 towrite[$-(chunk.paletteName.length + 2) .. $-2] = cast(ubyte[])chunk.paletteName[];
                 towrite[$-2] = '\0';
@@ -1713,7 +1717,7 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
             ubyte[] towrite = buffer[0 .. hIST.length * 2];
             
             size_t offset;
-            foreach(v; hIST) {
+            foreach(v; *hIST) {
                 towrite[offset .. offset + 2] = nativeToBigEndian(v);
                 
                 offset += 2;
