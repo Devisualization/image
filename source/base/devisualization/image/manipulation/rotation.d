@@ -192,26 +192,35 @@ auto rotate270Range(IR)(IR from, RotateDirection direction = RotateDirection.Clo
  */
 
 /**
- * Radians
+ * Simple shear+clip rotation.
+ * 
+ * Uses radians.
  */
-Image rotate(Impl, Image)(Image from, double by, RotateDirection direction = RotateDirection.ClockWise, IAllocator allocator = theAllocator()) if (isImage!Impl && isImage!Image)
+Image rotate(Impl, Image)(Image from, double by, IAllocator allocator = theAllocator()) if (isImage!Impl && isImage!Image)
 in {
     assert(by <= D_PI);
 } body {
     import std.math : cos, sin;
     import std.typecons : tuple;
 
+	if (by > 0) {
+		while(by > D_PI) {
+			by -= D_PI;
+		}
+	} else {
+		while (by < -D_PI) {
+			by += D_PI;
+		}
+	}
+
     auto newSize = calculateNewSize(from.width, from.height, by);
-
     Impl ret = allocator.make!Impl(newSize[0], newSize[1], allocator);
-
-    assert(0);
 
     foreach(toX; 0 .. newSize[0]) {
         foreach(toY; 0 .. newSize[1]) {
-            auto from = oldCoord(toX, toY, by);
+            auto destCoord = oldCoord(toX, toY, by);
 
-            // TODO: waiting on Manu Evans for blending of colors (bilienear filter)
+			ret[destCoord.x, destCoord.y] = from[destCoord.x, destCoord.y];
         }
     }
 
