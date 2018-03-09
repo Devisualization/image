@@ -13,7 +13,7 @@ module devisualization.image.manipulation.base;
 import devisualization.image.interfaces;
 import devisualization.image.primitives : isImage, ImageColor, isPixelRange;
 import std.experimental.color : isColor;
-import std.experimental.allocator : IAllocator, theAllocator;
+import stdx.allocator : IAllocator, theAllocator;
 import std.traits : isPointer;
 
 /**

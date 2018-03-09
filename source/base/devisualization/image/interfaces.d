@@ -12,7 +12,7 @@
 module devisualization.image.interfaces;
 import devisualization.image.primitives;
 import std.experimental.color;
-import std.experimental.allocator : IAllocator, ISharedAllocator, theAllocator, processAllocator;
+import stdx.allocator : IAllocator, ISharedAllocator, theAllocator, processAllocator;
 import std.traits : isPointer, PointerTarget, isUnsigned;
 
 /**
@@ -479,7 +479,7 @@ struct SwappableImage(Color) if (isColor!Color) {
         void delegate() pixelStoreAtOffset_;
 
         void destroyerHandler(T)() @trusted {
-            import std.experimental.allocator : dispose;
+            import stdx.allocator : dispose;
             allocator.dispose(cast(T)origin_);
         }
 
@@ -547,7 +547,7 @@ version(unittest) package {
         }
 
         this(size_t width, size_t height, IAllocator allocator = theAllocator()) {
-            import std.experimental.allocator : makeArray;
+            import stdx.allocator : makeArray;
             this.allocator = allocator;
 
             width_ = width;
@@ -582,21 +582,21 @@ version(unittest) package {
 }
 
 unittest {
-    import std.experimental.allocator : make, theAllocator;
+    import stdx.allocator : make, theAllocator;
 
     SwappableImage!RGB8 image = SwappableImage!(RGB8)(theAllocator.make!(MyTestImage!RGB8)(8, 3));
     RGB8 value = image[0, 0];
 }
 
 unittest {
-    import std.experimental.allocator : make, theAllocator;
+    import stdx.allocator : make, theAllocator;
 
     SwappableImage!RGBA8 image = SwappableImage!(RGBA8)(theAllocator.make!(MyTestImage!RGB8)(8, 3));
     RGBA8 value = image[0, 0];
 }
 
 unittest {
-    import std.experimental.allocator : make, theAllocator;
+    import stdx.allocator : make, theAllocator;
 
     SwappableImage!RGB8 image = SwappableImage!(RGB8)(theAllocator.make!(MyTestImage!RGB8)(8, 3));
     size_t count = image.count();
@@ -636,7 +636,7 @@ auto rangeOf(Color)(SwappableImage!Color* from) @nogc nothrow @safe {
  *      An input range to get every pixel along with its X and Y coordinates.
  */
 auto rangeOf(Image)(Image from, IAllocator allocator = theAllocator()) @trusted if (isImage!Image) {
-    import std.experimental.allocator : make;
+    import stdx.allocator : make;
     alias Color = ImageColor!Image;
 
     SwappableImage!Color* inst = allocator.make!(SwappableImage!Color)(from);
@@ -668,7 +668,7 @@ private {
                 bool ret = offsetX == 0 && offsetY == input.height();
                 
                 if (ret) {
-                    import std.experimental.allocator : dispose;
+                    import stdx.allocator : dispose;
                     // deallocates the input, if the allocator is provided
 
                     if (this.allocator !is null && input !is null) {
@@ -740,14 +740,14 @@ final class ImageObject(Impl) : ImageStorage!(ImageColor!Impl) if (is(Impl == st
 	static if (is(Impl == shared) && __traits(compiles, {new shared Impl(0, 0, cast(shared(ISharedAllocator))null);})) {
 		// Ditto
 		this(size_t width, size_t height, shared(ISharedAllocator) allocator = processAllocator()) @trusted shared {
-			import std.experimental.allocator : make;
+			import stdx.allocator : make;
 			swpInst = cast(shared)allocator.make!(Unqual!Impl)(width, height, allocator);
 			_salloc = allocator;
 		}
 	} else static if (!is(Impl == shared) && __traits(compiles, {new Impl(0, 0, cast(IAllocator)null);})) {
 		// Ditto
 		this(size_t width, size_t height, IAllocator allocator = theAllocator()) @trusted {
-			import std.experimental.allocator : make;
+			import stdx.allocator : make;
 			swpInst = allocator.make!Impl(width, height, allocator);
 			_alloc = allocator;
 		}
@@ -779,7 +779,7 @@ final class ImageObject(Impl) : ImageStorage!(ImageColor!Impl) if (is(Impl == st
         Impl* swpInst;
 
         ~this() {
-            import std.experimental.allocator : dispose;
+            import stdx.allocator : dispose;
 			static if (is(Impl == shared)) {
 				if (_salloc !is null)
 					_salloc.dispose(cast(Unqual!Impl*)swpInst);
@@ -807,14 +807,14 @@ final class ImageObject(Impl) : ImageStorage!(ImageColor!Impl) if (is(Impl == st
  */
 auto imageObject(Impl)(size_t width, size_t height, IAllocator allocator = theAllocator) @trusted
 if (is(Impl == struct) && isUnsigned!(ImageIndexType!Impl) && (ImageIndexType!Impl).sizeof <= (void*).sizeof && !is(Impl==shared)) {
-    import std.experimental.allocator : make;
+    import stdx.allocator : make;
     return allocator.make!(ImageObject!Impl)(width, height, allocator);
 }
 
 /// Ditto
 auto imageObject(Impl)(size_t width, size_t height, shared(ISharedAllocator) allocator = processAllocator) @trusted
 if (is(Impl == struct) && isUnsigned!(ImageIndexType!Impl) && (ImageIndexType!Impl).sizeof <= (void*).sizeof && is(Impl==shared)) {
-	import std.experimental.allocator : make;
+	import stdx.allocator : make;
 	return allocator.make!(shared(ImageObject!Impl))(width, height, allocator);
 }
 
@@ -833,14 +833,14 @@ if (is(Impl == struct) && isUnsigned!(ImageIndexType!Impl) && (ImageIndexType!Im
  */
 auto imageObject(Impl)(Impl* instance, IAllocator allocator = theAllocator) @trusted
 if (is(Impl == struct) && isUnsigned!(ImageIndexType!Impl) && (ImageIndexType!Impl).sizeof <= (void*).sizeof && !is(Impl==shared)) {
-    import std.experimental.allocator : make;
+    import stdx.allocator : make;
     return allocator.make!(ImageObject!Impl)(instance);
 }
 
 /// Ditto
 auto imageObject(Impl)(Impl* instance, shared(ISharedAllocator) allocator = processAllocator) @trusted
 if (is(Impl == struct) && isUnsigned!(ImageIndexType!Impl) && (ImageIndexType!Impl).sizeof <= (void*).sizeof && is(Impl==shared)) {
-	import std.experimental.allocator : make;
+	import stdx.allocator : make;
 	return allocator.make!(shared(ImageObject!Impl))(instance);
 }
 
@@ -860,7 +860,7 @@ if (is(Impl == struct) && isUnsigned!(ImageIndexType!Impl) && (ImageIndexType!Im
 auto imageObjectFrom(Impl, Image)(Image from, IAllocator allocator = theAllocator) @trusted
 if (is(Impl == struct) && isImage!Impl && isImage!Image && isUnsigned!(ImageIndexType!Impl) && (ImageIndexType!Impl).sizeof <= (void*).sizeof && !is(Impl==shared)) {
     import devisualization.image.primitives : copyTo;
-    import std.experimental.allocator : make;
+    import stdx.allocator : make;
 
     return from.copyTo(imageObject!Impl(from.width, from.height, allocator));
 }
@@ -869,7 +869,7 @@ if (is(Impl == struct) && isImage!Impl && isImage!Image && isUnsigned!(ImageInde
 auto imageObjectFrom(Impl, Image)(Image from, shared(ISharedAllocator) allocator = processAllocator) @trusted
 if (is(Impl == struct) && isImage!Impl && isImage!Image && isUnsigned!(ImageIndexType!Impl) && (ImageIndexType!Impl).sizeof <= (void*).sizeof && is(Impl==shared)) {
 	import devisualization.image.primitives : copyTo;
-	import std.experimental.allocator : make;
+	import stdx.allocator : make;
 	
 	return from.copyTo(imageObject!Impl(from.width, from.height, allocator));
 }

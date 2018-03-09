@@ -11,7 +11,7 @@ module devisualization.image.manipulation.rotation;
 import devisualization.image.interfaces;
 import devisualization.image.primitives : isImage, ImageColor, isPixelRange, PixelRangeColor;
 import std.experimental.color : isColor;
-import std.experimental.allocator : make, theAllocator, IAllocator;
+import stdx.allocator : make, theAllocator, IAllocator;
 
 ///
 enum RotateDirection : bool {

@@ -6,6 +6,7 @@
 	"homepage": "https://github.com/Devisualization/image",
 	"license": "BSL",
 	"dependencies": {
+		"stdx-allocator": "~>2.77.0",
 		"de_image:base": "*"
 	},
 	"sourceFiles": [],
