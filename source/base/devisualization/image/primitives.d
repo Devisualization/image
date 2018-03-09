@@ -16,7 +16,7 @@ import devisualization.image.interfaces;
 import std.experimental.color;
 import devisualization.util.core.memory.managed : managed;
 import std.traits : isPointer, PointerTarget;
-import std.experimental.allocator : IAllocator, theAllocator;
+import stdx.allocator : IAllocator, theAllocator;
 
 /**
  * Determine if a type is an image.
@@ -97,7 +97,7 @@ version(unittest) private {
         }
 
         this(size_t width, size_t height, IAllocator allocator = theAllocator()) {
-            import std.experimental.allocator : makeArray;
+            import stdx.allocator : makeArray;
             this.allocator = allocator;
 
             width_ = width;
@@ -146,7 +146,7 @@ version(unittest) private {
         }
 
         this(size_t width, size_t height, IAllocator allocator = theAllocator()) {
-            import std.experimental.allocator : makeArray;
+            import stdx.allocator : makeArray;
             this.allocator = allocator;
 
             width_ = width;
@@ -192,7 +192,7 @@ version(unittest) private {
         }
 
         this(size_t width, size_t height, IAllocator allocator = theAllocator()) {
-            import std.experimental.allocator : makeArray;
+            import stdx.allocator : makeArray;
             this.allocator = allocator;
 
             width_ = width;
@@ -298,7 +298,7 @@ version(unittest) private {
         }
 
         this(size_t width, size_t height, IAllocator allocator = theAllocator()) {
-            import std.experimental.allocator : makeArray;
+            import stdx.allocator : makeArray;
             this.allocator = allocator;
 
             width_ = width;
@@ -348,7 +348,7 @@ version(unittest) private {
         }
 
         this(size_t width, size_t height, IAllocator allocator = theAllocator()) {
-            import std.experimental.allocator : makeArray;
+            import stdx.allocator : makeArray;
             this.allocator = allocator;
 
             width_ = width;
@@ -398,7 +398,7 @@ version(unittest) private {
         }
 
         this(size_t width, size_t height, IAllocator allocator = theAllocator()) {
-            import std.experimental.allocator : makeArray;
+            import stdx.allocator : makeArray;
             this.allocator = allocator;
 
             width_ = width;
@@ -544,7 +544,7 @@ Image copyInto(IRRange, Image)(ref IRRange input, ref Image destination) @nogc @
  *      The pixel input range for composibility reasons
  */
 IR createImageFrom(ImageImpl, IR)(IR input, out ImageImpl destination, IAllocator allocator=theAllocator()) @safe if (isImage!ImageImpl && isPixelRange!IR) {
-    import std.experimental.allocator : make;
+    import stdx.allocator : make;
 
     size_t width = input.front.width;
     size_t height = input.front.height;

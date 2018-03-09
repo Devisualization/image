@@ -9,7 +9,7 @@
  */
 module devisualization.image.storage.base;
 import std.experimental.color : isColor;
-import std.experimental.allocator : IAllocator, ISharedAllocator, theAllocator, processAllocator;
+import stdx.allocator : IAllocator, ISharedAllocator, theAllocator, processAllocator;
 
 /**
  * A fairly simple image storage type using a horizontal scan line memory order.
@@ -32,7 +32,7 @@ struct ImageStorageHorizontal(Color) if (isColor!Color) {
 
     ///
     this(size_t width, size_t height, IAllocator allocator = theAllocator()) @trusted {
-        import std.experimental.allocator : makeArray;
+        import stdx.allocator : makeArray;
         this.allocator = allocator;
 
         width_ = width;
@@ -47,7 +47,7 @@ struct ImageStorageHorizontal(Color) if (isColor!Color) {
 
 	///
 	this(size_t width, size_t height, shared(ISharedAllocator) allocator) @trusted shared {
-		/+import std.experimental.allocator : makeArray;
+		/+import stdx.allocator : makeArray;
 		this.allocator = allocator;
 		
 		width_ = width;
@@ -61,7 +61,7 @@ struct ImageStorageHorizontal(Color) if (isColor!Color) {
 	}
 
 	~this() @trusted {
-		import std.experimental.allocator : dispose;
+		import stdx.allocator : dispose;
 
 		foreach(_; 0 .. width_) {
 			allocator.dispose(data[_]);
@@ -109,7 +109,7 @@ struct ImageStorageHorizontal(Color) if (isColor!Color) {
         assert(newWidth > 0);
         assert(newHeight > 0);
     } body { 
-        import std.experimental.allocator : expandArray, shrinkArray, makeArray;
+        import stdx.allocator : expandArray, shrinkArray, makeArray;
 
         if (newWidth == width_ && newHeight == height_) return true;
         size_t deltaHeight;
@@ -178,7 +178,7 @@ struct ImageStorageVertical(Color) if (isColor!Color) {
 
     ///
     this(size_t width, size_t height, IAllocator allocator = theAllocator()) @trusted {
-        import std.experimental.allocator : makeArray;
+        import stdx.allocator : makeArray;
         this.allocator = allocator;
 
         width_ = width;
@@ -192,7 +192,7 @@ struct ImageStorageVertical(Color) if (isColor!Color) {
     }
 
 	~this() @trusted {
-		import std.experimental.allocator : dispose;
+		import stdx.allocator : dispose;
 
 		foreach(_; 0 .. width_) {
 			allocator.dispose(data[_]);
@@ -227,7 +227,7 @@ struct ImageStorageVertical(Color) if (isColor!Color) {
         assert(newWidth > 0);
         assert(newHeight > 0);
     } body { 
-        import std.experimental.allocator : expandArray, shrinkArray, makeArray;
+        import stdx.allocator : expandArray, shrinkArray, makeArray;
 
         if (newWidth == width_ && newHeight == height_) return true;
         size_t deltaWidth;

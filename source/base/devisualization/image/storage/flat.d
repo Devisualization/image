@@ -10,7 +10,7 @@
  */
 module devisualization.image.storage.flat;
 import std.experimental.color : isColor;
-import std.experimental.allocator : IAllocator, theAllocator;
+import stdx.allocator : IAllocator, theAllocator;
 
 /**
  * Represents an image using a flat array.
@@ -34,7 +34,7 @@ struct FlatImageStorage(Color) if (isColor!Color) {
     
     ///
     this(size_t width, size_t height, IAllocator allocator = theAllocator()) @trusted {
-        import std.experimental.allocator : makeArray;
+        import stdx.allocator : makeArray;
         this.allocator = allocator;
 
         width_ = width;
@@ -44,7 +44,7 @@ struct FlatImageStorage(Color) if (isColor!Color) {
     }
 
 	~this() @trusted {
-		import std.experimental.allocator : dispose;
+		import stdx.allocator : dispose;
 
 		if (!__ctfe && data !is null)
 			allocator.dispose(data);
@@ -72,7 +72,7 @@ struct FlatImageStorage(Color) if (isColor!Color) {
     
     ///
     bool resize(size_t newWidth, size_t newHeight) @trusted {
-        import std.experimental.allocator : dispose, makeArray;
+        import stdx.allocator : dispose, makeArray;
         import std.algorithm : min;
 
         scope(failure)

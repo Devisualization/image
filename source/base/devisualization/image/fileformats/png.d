@@ -13,7 +13,7 @@ import devisualization.image.interfaces;
 import devisualization.image.primitives : isImage, ImageColor;
 import devisualization.image.storage.base : ImageStorageHorizontal;
 import devisualization.util.core.memory.managed;
-import std.experimental.allocator : IAllocator, theAllocator, makeArray, make, expandArray, dispose;
+import stdx.allocator : IAllocator, theAllocator, makeArray, make, expandArray, dispose;
 import std.experimental.color : isColor, RGB8, RGBA8, convertColor;
 import std.experimental.color.rgb : RGB;
 import std.range : isInputRange, ElementType;
