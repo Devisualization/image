@@ -104,7 +104,11 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
         void addText(string[] toAdd...) {
             import std.algorithm : sum, map;
             size_t len = ret.length;
-            allocator.expandArray(ret, toAdd.map!`a.length`.sum);
+
+            if (len == 0)
+                ret = allocator.makeArray!char(toAdd.map!`a.length`.sum);
+            else
+                allocator.expandArray(ret, toAdd.map!`a.length`.sum);
             
             foreach(v; toAdd) {
                 ret[len .. len + v.length] = v[];
@@ -263,13 +267,13 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
             ubyte[] buffer = allocator.makeArray!ubyte(1024 * 1024 * 8); // 8mb
             
             ubyte popReadValue() {
-                scope(exit) {
-                    if (input.empty)
-                        throw allocator.make!ImageNotLoadableException("Input was not long enough");
-                    input.popFront;
-                }
-                
-                return input.front;
+                if (input.empty)
+                    throw new ImageNotLoadableException("Input was not long enough");
+
+                ubyte ret = input.front;
+                input.popFront;
+
+                return ret;
             }
             
             bool checkHasPNGText() {
@@ -292,7 +296,7 @@ struct PNGFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
                 return true;
             }
             if (!checkHasPNGText()) {
-                throw allocator.make!ImageNotLoadableException("Input was not a PNG image");
+                throw new ImageNotLoadableException("Input was not a PNG image");
             }
             
             ubyte[] readChunk(out char[4] name) {

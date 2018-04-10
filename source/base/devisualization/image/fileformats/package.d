@@ -10,3 +10,4 @@
 module devisualization.image.fileformats;
 public import devisualization.image.fileformats.defs;
 public import devisualization.image.fileformats.png;
+public import devisualization.image.fileformats.bmp;

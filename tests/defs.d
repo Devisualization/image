@@ -1,4 +1,4 @@
-﻿module tests.defs;
+module tests.defs;
 
 void entryTest(string for_, string mod = __MODULE__, int line = __LINE__) {
     import std.stdio : writeln;

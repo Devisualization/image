@@ -1,4 +1,4 @@
-﻿module tests.png.defs;
+module tests.png.defs;
 public import tests.defs;
 import devisualization.image.fileformats.png;
 
