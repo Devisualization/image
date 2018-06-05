@@ -6,7 +6,7 @@
 	"homepage": "https://github.com/Devisualization/image",
 	"license": "BSL",
 	"dependencies": {
-		"stdx-allocator": "~>2.77.0",
+		"stdx-allocator": "~>2.77.2",
 		"de_image:base": "*"
 	},
 	"sourceFiles": [],
@@ -18,10 +18,10 @@
 			"sourcePaths": ["source/base"],
 			"importPaths": ["source/base"],
 			"dependencies": {
-				"color": "~>0.0.5",
+				"color": "~>0.0.6",
 				"de_util:core": "~>0.1.5",
-				"emsi_containers": "~>0.5.3",
-				"stdx-allocator": "~>2.77.0"
+				"emsi_containers": "~>0.7.0",
+				"stdx-allocator": "*"
 			}
 		},
 		{
