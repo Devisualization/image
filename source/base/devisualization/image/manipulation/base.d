@@ -114,7 +114,7 @@ auto fillRange(IRImage, ET = ElementType!IRImage, Color)(IRImage image, Color va
 }
 
 private {
-    import std.range.interfaces : ElementType;
+    import std.range : ElementType;
 
     struct FillRange(Color) {
         private {
