@@ -141,7 +141,7 @@ struct BMPFileFormat(Color) if (isColor!Color || is(Color == HeadersOnly)) {
             infoHeader.horizontalResolution = cast(int)popReadUint;
             infoHeader.verticalResolution = cast(int)popReadUint;
             infoHeader.colorsUsed = popReadUint;
-            infoHeader.colorsUsed = popReadUint;
+            infoHeader.colorsImp = popReadUint;
 
             import std.stdio;
             writeln(infoHeader);
