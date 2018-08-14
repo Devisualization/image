@@ -241,8 +241,15 @@ template ImageColor(Image) if (isImage!Image) {
  * Uses the first overload.
  */
 template ImageIndexType(Image) if (isImage!Image) {
-	import std.traits : Parameters;
-	alias ImageIndexType = Parameters!(__traits(getOverloads, Image, "getPixel")[0])[0];
+    import std.traits : Parameters, isPointer;
+
+    // https://issues.dlang.org/show_bug.cgi?id=19170
+    static if (isPointer!Image) {
+        static assert(!isPointer!(typeof(Image.init[0])));
+        alias ImageIndexType = Parameters!(__traits(getOverloads, typeof(Image.init[0]), "getPixel")[0])[0];
+    } else {
+        alias ImageIndexType = Parameters!(__traits(getOverloads, Image, "getPixel")[0])[0];
+    }
 }
 
 /**
